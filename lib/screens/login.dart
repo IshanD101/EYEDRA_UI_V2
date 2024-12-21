@@ -30,7 +30,6 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: Directionality(
         textDirection: TextDirection.ltr,
         child: Padding(
@@ -39,14 +38,21 @@ class _LoginFormState extends State<LoginForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 60),
-                const Text(
-                  'EYEDRA',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                    letterSpacing: 5,
+                const SizedBox(height: 100),
+                ShaderMask(
+                  shaderCallback: (bounds) => LinearGradient(
+                    colors: [Colors.purpleAccent, Colors.blue], // Gradient colors
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+                  child: const Text(
+                    'EYEDRA',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // The color is ignored by ShaderMask, but it still needs to be set.
+                      letterSpacing: 5,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -101,7 +107,7 @@ class _LoginFormState extends State<LoginForm> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
+                            backgroundColor: Colors.purple,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -134,7 +140,7 @@ class _LoginFormState extends State<LoginForm> {
                             child: const Text(
                               'Sign Up',
                               style: TextStyle(
-                                color: Colors.teal,
+                                color: Colors.purple,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
