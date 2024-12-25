@@ -9,6 +9,8 @@ void main() {
 }
 
 class RegisterForm extends StatefulWidget {
+  const RegisterForm({super.key});
+
   @override
   _RegisterFormState createState() => _RegisterFormState();
 }
@@ -50,7 +52,10 @@ class _RegisterFormState extends State<RegisterForm> {
                 const SizedBox(height: 60),
                 ShaderMask(
                   shaderCallback: (bounds) => LinearGradient(
-                    colors: [Colors.purpleAccent, Colors.blue], // Gradient colors
+                    colors: [
+                      Colors.purpleAccent,
+                      Colors.blue
+                    ], // Gradient colors
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ).createShader(bounds),
@@ -59,7 +64,8 @@ class _RegisterFormState extends State<RegisterForm> {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // The color is ignored by ShaderMask, but it still needs to be set.
+                      color: Colors
+                          .white, // The color is ignored by ShaderMask, but it still needs to be set.
                       letterSpacing: 5,
                     ),
                   ),

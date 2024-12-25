@@ -1,4 +1,4 @@
-import 'package:eyedra_ui_v2/screens/login.dart';
+import 'package:eyedra_ui_v2/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Navigate to the next page after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LoginForm()),
+        MaterialPageRoute(builder: (context) => HomePage()),
       );
     });
   }
@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen>
             // Popup Animation for Logo
             ScaleTransition(
               scale: _scaleAnimation,
-              child: Container(
+              child: SizedBox(
                 width: 100,
                 height: 100,
                 child: Image.asset(
