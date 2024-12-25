@@ -8,6 +8,8 @@ void main() {
 }
 
 class LoginForm extends StatefulWidget {
+  const LoginForm({super.key});
+
   @override
   _LoginFormState createState() => _LoginFormState();
 }
@@ -41,7 +43,7 @@ class _LoginFormState extends State<LoginForm> {
                 const SizedBox(height: 100),
                 ShaderMask(
                   shaderCallback: (bounds) => LinearGradient(
-                    colors: [Colors.purpleAccent, Colors.blue], // Gradient colors
+                    colors: [Colors.purpleAccent, Colors.blue],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ).createShader(bounds),
@@ -50,7 +52,7 @@ class _LoginFormState extends State<LoginForm> {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // The color is ignored by ShaderMask, but it still needs to be set.
+                      color: Colors.white,
                       letterSpacing: 5,
                     ),
                   ),
