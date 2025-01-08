@@ -81,7 +81,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            _editProfileWindow(context);
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue[600],
                             shape: RoundedRectangleBorder(
@@ -140,14 +142,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       crossAxisSpacing: 8.0,
                       mainAxisSpacing: 8.0,
                     ),
-                    itemCount: 20, // Replace with your content count
+                    itemCount: 5, // Replace with your content count
                     itemBuilder: (context, index) {
-                      return Container(
-                        color: Colors.grey[300],
-                        child: Center(
-                          child: Text(
-                            "Item $index",
-                            style: const TextStyle(color: Colors.black),
+                      return GestureDetector(
+                        onTap: () {
+                          _popupWindow(
+                              context, "Details about item $index go here...");
+                        },
+                        child: Container(
+                          color: Colors.grey[300],
+                          child: Center(
+                            child: Text(
+                              "Item $index",
+                              style: const TextStyle(color: Colors.black),
+                            ),
                           ),
                         ),
                       );
@@ -156,7 +164,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   // List View
                   ListView.builder(
                     padding: const EdgeInsets.all(16.0),
-                    itemCount: 10, // Replace with your content count
+                    itemCount: 5, // Replace with your content count
                     itemBuilder: (context, index) {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12.0),
@@ -178,4 +186,203 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+}
+
+void _popupWindow(BuildContext context, String details) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: double.infinity,
+                height: 400,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    "User Content",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      details,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.thumb_up_alt_outlined,
+                              color: Colors.purple),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon:
+                              Icon(Icons.share_outlined, color: Colors.purple),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        backgroundColor: Colors.blue[800],
+                      ),
+                      child: const Text(
+                        "Close",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void _editProfileWindow(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: SizedBox(
+            height: 750,
+            width: 550,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Title
+                    Text(
+                      "Edit Profile",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[900],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Profile Picture with Edit Icon
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.grey[300],
+                          child: const Icon(
+                            Icons.person,
+                            size: 60,
+                            color: Colors.white,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.blue),
+                          onPressed: () {
+                            // Add functionality to change profile picture
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+
+                    // Form to Edit Username
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: "Username",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        prefixIcon: const Icon(Icons.person),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Form to Edit Description
+                    TextField(
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        labelText: "Description",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        prefixIcon: const Icon(Icons.description),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    // Save and Cancel Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            // Add functionality to save changes
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[800],
+                          ),
+                          child: const Text(
+                            "Save",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.purple,
+                          ),
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      });
 }
