@@ -30,11 +30,20 @@ class _HomePageState extends State<HomePage> {
     NotificationPage(),
   ];
 
+  // Titles for each tab
+  final List<String> titles = [
+    "EYEDRA", // Home
+    "COMMUNITY", // Community Tab
+    "CAMPFIRE", // Campfire Tab
+    "FEED", // Feed Tab
+    "NOTIFICATIONS", // Notifications Tab
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40),
+        preferredSize: const Size.fromHeight(50),
         child: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -43,12 +52,13 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {},
           ),
           centerTitle: true,
-          title: const Text(
-            "EYEDRA",
-            style: TextStyle(
+          title: Text(
+            titles[_currentIndex], // Dynamically setting title from list
+            style: const TextStyle(
               color: Colors.purple,
               fontWeight: FontWeight.bold,
-              letterSpacing: 2.0,
+              letterSpacing: 2.5,
+              fontSize: 25,
             ),
           ),
           actions: [
