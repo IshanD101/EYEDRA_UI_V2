@@ -33,6 +33,13 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           actions: [
             IconButton(
+              icon: Icon(
+                Icons.exit_to_app,
+                color: Colors.blue[800],
+              ),
+              onPressed: () {},
+            ),
+            IconButton(
               icon: Icon(Icons.settings, color: Colors.blue[800]),
               onPressed: () {},
             ),
@@ -81,6 +88,21 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[600],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Add",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(
+                            width: 16), // Adds space between the buttons
+                        ElevatedButton(
                           onPressed: () {
                             _editProfileWindow(context);
                           },
@@ -95,23 +117,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.purple,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            "28K",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ),
                       ],
                     ),
                   ],
@@ -119,7 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             const SizedBox(height: 16),
-            // Tab Bar
+
             TabBar(
               indicatorColor: Colors.purple,
               labelColor: Colors.blue[800],
@@ -129,11 +134,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 Tab(icon: Icon(Icons.list_alt_outlined)),
               ],
             ),
-            // Tab Bar Views
+
             Expanded(
               child: TabBarView(
                 children: [
-                  // Grid View
                   GridView.builder(
                     padding: const EdgeInsets.all(16.0),
                     gridDelegate:
@@ -142,7 +146,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       crossAxisSpacing: 8.0,
                       mainAxisSpacing: 8.0,
                     ),
-                    itemCount: 5, // Replace with your content count
+                    itemCount: 5,
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
@@ -161,10 +165,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       );
                     },
                   ),
-                  // List View
                   ListView.builder(
                     padding: const EdgeInsets.all(16.0),
-                    itemCount: 5, // Replace with your content count
+                    itemCount: 5,
                     itemBuilder: (context, index) {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12.0),
@@ -288,7 +291,6 @@ void _editProfileWindow(BuildContext context) {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Title
                     Text(
                       "Edit Profile",
                       style: TextStyle(
@@ -298,8 +300,6 @@ void _editProfileWindow(BuildContext context) {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Profile Picture with Edit Icon
                     Stack(
                       alignment: Alignment.bottomRight,
                       children: [
@@ -314,15 +314,11 @@ void _editProfileWindow(BuildContext context) {
                         ),
                         IconButton(
                           icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () {
-                            // Add functionality to change profile picture
-                          },
+                          onPressed: () {},
                         ),
                       ],
                     ),
                     const SizedBox(height: 30),
-
-                    // Form to Edit Username
                     TextField(
                       decoration: InputDecoration(
                         labelText: "Username",
@@ -333,8 +329,6 @@ void _editProfileWindow(BuildContext context) {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Form to Edit Description
                     TextField(
                       maxLines: 4,
                       decoration: InputDecoration(
@@ -346,14 +340,11 @@ void _editProfileWindow(BuildContext context) {
                       ),
                     ),
                     const SizedBox(height: 30),
-
-                    // Save and Cancel Buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            // Add functionality to save changes
                             Navigator.of(context).pop();
                           },
                           style: ElevatedButton.styleFrom(
