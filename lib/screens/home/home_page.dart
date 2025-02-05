@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:eyedra_ui_v2/screens/community/group_space.dart';
 import 'package:eyedra_ui_v2/screens/feed/feed_main.dart';
 import 'package:eyedra_ui_v2/screens/home/notification_page.dart';
+import 'package:eyedra_ui_v2/screens/home/side_bar.dart';
 import 'package:eyedra_ui_v2/screens/navigation.dart';
 import 'package:eyedra_ui_v2/screens/profile/profile_page.dart';
 import 'package:eyedra_ui_v2/screens/virtual_campfire/campfire_main.dart';
-import 'package:flutter/material.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -20,6 +21,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>(); // Global key to control Scaffold
+
   int _currentIndex = 0;
 
   final List<Widget> pages = const [
@@ -30,48 +34,58 @@ class _HomePageState extends State<HomePage> {
     NotificationPage(),
   ];
 
-  // Titles for each tab
   final List<String> titles = [
-    "EYEDRA", // Home
-    "COMMUNITY", // Community Tab
-    "CAMPFIRE", // Campfire Tab
-    "FEED", // Feed Tab
-    "NOTIFICATIONS", // Notifications Tab
+    "EYEDRA",
+    "COMMUNITY",
+    "CAMPFIRE",
+    "FEED",
+    "NOTIFICATIONS",
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50),
-        child: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.menu, color: Colors.blue[800]),
-            onPressed: () {},
+      key: _scaffoldKey, // Assign the global key to Scaffold
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Colors.blue[800]),
+          onPressed: () {
+            _scaffoldKey.currentState
+                ?.openDrawer(); // Use the global key to open the drawer
+          },
+        ),
+        centerTitle: true,
+        title: Text(
+          titles[_currentIndex],
+          style: const TextStyle(
+            color: Colors.purple,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2.5,
+            fontSize: 25,
           ),
-          centerTitle: true,
-          title: Text(
-            titles[_currentIndex], // Dynamically setting title from list
-            style: const TextStyle(
-              color: Colors.purple,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2.5,
-              fontSize: 25,
-            ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person, color: Colors.blue[800]),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+            },
           ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.person, color: Colors.blue[800]),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-          ],
+        ],
+      ),
+      drawer: Drawer(
+        child: SideBar(
+          onMenuItemSelected: (int index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            Navigator.pop(context); // Close the sidebar after selection
+          },
         ),
       ),
       body: SafeArea(

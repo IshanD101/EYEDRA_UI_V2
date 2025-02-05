@@ -1,3 +1,4 @@
+import 'package:eyedra_ui_v2/screens/home/home_page.dart';
 import 'package:eyedra_ui_v2/screens/register.dart';
 import 'package:flutter/material.dart';
 
@@ -105,7 +106,11 @@ class _LoginFormState extends State<LoginForm> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              print('Login Successful!');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage()),
+                              );
                             }
                           },
                           style: ElevatedButton.styleFrom(

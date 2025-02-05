@@ -18,10 +18,8 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   bool _isPasswordVisible = false;
 
-  // Form keys
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for text fields
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -137,7 +135,11 @@ class _RegisterFormState extends State<RegisterForm> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              print('Form Submitted!');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginForm()),
+                              );
                             }
                           },
                           style: ElevatedButton.styleFrom(
