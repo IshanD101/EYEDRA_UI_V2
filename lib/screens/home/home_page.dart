@@ -6,6 +6,7 @@ import 'package:eyedra_ui_v2/screens/home/side_bar.dart';
 import 'package:eyedra_ui_v2/screens/navigation.dart';
 import 'package:eyedra_ui_v2/screens/profile/profile_page.dart';
 import 'package:eyedra_ui_v2/screens/virtual_campfire/campfire_main.dart';
+import 'package:eyedra_ui_v2/widgets/feed_list.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -21,13 +22,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>(); // Global key to control Scaffold
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   int _currentIndex = 0;
 
-  final List<Widget> pages = const [
-    Center(child: Text('Home')),
+  final List<Widget> pages = [
+    FeedList(),
     Community(),
     CampfireMain(),
     FeedMain(),
@@ -45,15 +45,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey, // Assign the global key to Scaffold
+      key: _scaffoldKey,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+        backgroundColor: Colors.white.withOpacity(0.9),
+        elevation: 4,
+        shadowColor: Colors.black26,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+        ),
         leading: IconButton(
           icon: Icon(Icons.menu, color: Colors.blue[800]),
+          splashRadius: 25,
           onPressed: () {
-            _scaffoldKey.currentState
-                ?.openDrawer(); // Use the global key to open the drawer
+            _scaffoldKey.currentState?.openDrawer();
           },
         ),
         centerTitle: true,
@@ -61,14 +65,16 @@ class _HomePageState extends State<HomePage> {
           titles[_currentIndex],
           style: const TextStyle(
             color: Colors.purple,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2.5,
-            fontSize: 25,
+            fontWeight: FontWeight.w600,
+            fontSize: 22,
+            fontFamily: 'Roboto',
+            letterSpacing: 1.5,
           ),
         ),
         actions: [
           IconButton(
             icon: Icon(Icons.person, color: Colors.blue[800]),
+            splashRadius: 25,
             onPressed: () {
               Navigator.push(
                 context,
@@ -84,12 +90,12 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               _currentIndex = index;
             });
-            Navigator.pop(context); // Close the sidebar after selection
+            Navigator.pop(context);
           },
         ),
       ),
       body: SafeArea(
-        child: pages[_currentIndex],
+        child: pages[_currentIndex], // Displays the selected page
       ),
       bottomNavigationBar: CustomBottomNav(
         currentIndex: _currentIndex,

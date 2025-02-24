@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class FeedMain extends StatefulWidget {
   const FeedMain({super.key});
 
+  @override
   State<FeedMain> createState() => _FeedState();
 }
 

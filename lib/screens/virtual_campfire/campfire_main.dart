@@ -18,7 +18,7 @@ class _CampfireState extends State<CampfireMain> {
   ];
 
   void _showLoginDialog(BuildContext context, String sessionName) {
-    final TextEditingController _controller = TextEditingController();
+    final TextEditingController controller = TextEditingController();
 
     showDialog(
       context: context,
@@ -52,7 +52,7 @@ class _CampfireState extends State<CampfireMain> {
                 ),
                 const SizedBox(height: 10),
                 TextField(
-                  controller: _controller,
+                  controller: controller,
                   decoration: const InputDecoration(
                     hintText: 'Username',
                     border: OutlineInputBorder(),
@@ -64,16 +64,15 @@ class _CampfireState extends State<CampfireMain> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    if (_controller.text.isNotEmpty) {
+                    if (controller.text.isNotEmpty) {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Welcome, ${_controller.text}!'),
+                          content: Text('Welcome, ${controller.text}!'),
                         ),
                       );
                     }
                   },
-                  child: const Text('Enter'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
                     foregroundColor: Colors.white,
@@ -83,6 +82,7 @@ class _CampfireState extends State<CampfireMain> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  child: const Text('Enter'),
                 ),
               ],
             ),

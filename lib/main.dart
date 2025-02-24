@@ -37,21 +37,18 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Initialize Animation Controller
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 
-    // Define Scaling Animation
     _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
-        curve: Curves.easeOutBack, // Back curve for the popup effect
+        curve: Curves.easeOutBack,
       ),
     );
 
-    // Start the animation
     _animationController.forward();
 
     // Navigate to the next page after 3 seconds

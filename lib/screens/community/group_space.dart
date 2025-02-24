@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Community extends StatefulWidget {
   const Community({super.key});
 
+  @override
   State<Community> createState() => _CommunityState();
 }
 
