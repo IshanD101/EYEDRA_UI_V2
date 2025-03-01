@@ -45,7 +45,30 @@ class CustomAppBar {
                 child: _buildColorfulText(title),
               ),
             ),
-            ],
+                    IconButton(
+                      icon: const Icon(Icons.person, color: Colors.white),
+                      onPressed: onProfileTap,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const ChatbotScreen(),
+                          );
+                        },
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Image.asset(
+                            'assets/images/eyedra8.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                 ],
               ),// Will add row content later
             ),
           ),
