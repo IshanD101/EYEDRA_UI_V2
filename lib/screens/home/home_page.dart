@@ -47,7 +47,18 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-
+      // Use the custom glassmorphic app bar
+      appBar: CustomAppBar.buildGlassmorphicAppBar(
+        context,
+        _scaffoldKey,
+        titles[_currentIndex],
+            () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfilePage()),
+          );
+        },
+      ),
       drawer: Drawer(
         child: SideBar(
           onMenuItemSelected: (int index) {
