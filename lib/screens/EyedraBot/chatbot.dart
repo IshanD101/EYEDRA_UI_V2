@@ -65,6 +65,33 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         ),
       ),
       const Divider(color: Colors.white),
+      Expanded(
+        child: ListView.builder(
+          itemCount: messages.length,
+          itemBuilder: (context, index) {
+            final msg = messages[index];
+            return Align(
+              alignment: msg["role"] == "user"
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  color: msg["role"] == "user"
+                      ? Colors.blueAccent
+                      : Colors.grey[800],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  msg["content"]!,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
 
     ]
     )
