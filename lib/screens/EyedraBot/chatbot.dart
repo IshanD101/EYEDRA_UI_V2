@@ -18,4 +18,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
   final TextEditingController _controller = TextEditingController();
   List<Map<String, String>> messages = [];
+
+  Future<void> sendMessage(String message) async {
+    setState(() {
+      messages.add({"role": "user", "content": message});
+    });
+  }
 }
