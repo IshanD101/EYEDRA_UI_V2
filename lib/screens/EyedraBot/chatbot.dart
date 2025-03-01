@@ -30,6 +30,16 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"message": message}),
       );
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        setState(() {
+          messages.add({"role": "bot", "content": responseData["response"]});
+        });
+      } else {
+        setState(() {
+          messages.add({"role": "bot", "content": "Error: Unable to get response."});
+        });
+      }
     } catch (e) {
       setState(() {
         messages.add({"role": "bot", "content": "Error: Unable to connect to server."});
