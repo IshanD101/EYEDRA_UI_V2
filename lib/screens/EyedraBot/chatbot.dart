@@ -16,4 +16,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   Widget build(BuildContext context) {
     return Container(); // Temporary placeholder
   }
+  final TextEditingController _controller = TextEditingController();
+  List<Map<String, String>> messages = [];
 }
