@@ -92,11 +92,34 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           },
         ),
       ),
-
-    ]
-    )
-    )
+      TextField(
+        controller: _controller,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: "Type a message...",
+          hintStyle: const TextStyle(color: Colors.white60),
+          filled: true,
+          fillColor: Colors.black26,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.send, color: Colors.blue),
+            onPressed: () {
+              if (_controller.text.isNotEmpty) {
+                sendMessage(_controller.text);
+                _controller.clear();
+              }
+            },
+          ),
+        ),
+      ),
+    ],
+    ),
+        ),
     );
   }
 }
+
+
+
+
 
