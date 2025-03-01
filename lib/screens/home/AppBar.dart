@@ -32,7 +32,21 @@ class CustomAppBar {
                   ),
                 ],
               ),
-              child: Container(), // Will add row content later
+              child: Row(
+                  children: [
+              IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () {
+                scaffoldKey.currentState?.openDrawer();
+              },
+            ),
+            Expanded(
+              child: Center(
+                child: _buildColorfulText(title),
+              ),
+            ),
+            ],
+              ),// Will add row content later
             ),
           ),
         ),
