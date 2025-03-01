@@ -12,10 +12,7 @@ class ChatbotScreen extends StatefulWidget {
 }
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(); // Temporary placeholder
-  }
+
   final TextEditingController _controller = TextEditingController();
   List<Map<String, String>> messages = [];
 
@@ -46,6 +43,22 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       });
     }
   }
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+        insetPadding: const EdgeInsets.all(20),
+        backgroundColor: Colors.black.withOpacity(0.8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+        padding: const EdgeInsets.all(16),
+    height: 500,
+    child: Column(
+    children: [
 
+    ]
+    )
+    )
+    );
   }
+}
 
