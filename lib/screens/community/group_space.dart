@@ -47,7 +47,6 @@ class _CommunityState extends State<Community> {
     });
 
     try {
-      // TODO: Replace with actual API call
       await Future.delayed(const Duration(seconds: 2));
 
       final List<Map<String, dynamic>> sampleData = [
@@ -208,7 +207,6 @@ class _CommunityState extends State<Community> {
               imageUrl: group.imageUrl,
               memberCount: group.memberCount,
               onTap: () {
-                // TODO: Navigate to group chat
                 print('Tapped on ${group.name}');
               },
             );

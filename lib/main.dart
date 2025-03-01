@@ -51,7 +51,6 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animationController.forward();
 
-    // Navigate to the next page after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => HomePage()),
@@ -73,7 +72,6 @@ class _SplashScreenState extends State<SplashScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Popup Animation for Logo
             ScaleTransition(
               scale: _scaleAnimation,
               child: SizedBox(
@@ -86,7 +84,6 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
             const SizedBox(height: 20),
-            // Popup Animation for Text
             ScaleTransition(
               scale: _scaleAnimation,
               child: const Text(

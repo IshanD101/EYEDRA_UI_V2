@@ -66,9 +66,9 @@ class _PostWidgetState extends State<PostWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildIconButton(Icons.thumb_up, widget.post.likes, Colors.blue,
-                    () {
-                  setState(() => widget.post.likes++);
-                }),
+                        () {
+                      setState(() => widget.post.likes++);
+                    }),
                 _buildIconButton(
                     Icons.thumb_down, widget.post.dislikes, Colors.red, () {
                   setState(() => widget.post.dislikes++);
@@ -77,10 +77,12 @@ class _PostWidgetState extends State<PostWidget> {
                     Icons.comment, widget.post.comments, Colors.grey, () {
                   setState(() => widget.post.comments++);
                 }),
-                _buildIconButton(Icons.share, widget.post.shares, Colors.green,
-                    () {
-                  setState(() => widget.post.shares++);
-                }),
+                IconButton(
+                  icon: const Icon(Icons.share, color: Colors.green),
+                  onPressed: () {
+                    setState(() => widget.post.shares++);
+                  },
+                ),
               ],
             ),
           ],

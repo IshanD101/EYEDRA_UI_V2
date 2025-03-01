@@ -1,5 +1,4 @@
-// lib/utils/notification_utils.dart
-import '../models/user_notifications.dart'; // Adjust the import based on your project structure.
+import '../models/user_notifications.dart';
 
 class NotificationUtils {
   static List<UserNotification> filterNotifications(
