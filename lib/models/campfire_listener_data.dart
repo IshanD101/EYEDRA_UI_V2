@@ -42,7 +42,6 @@ class Host {
   }
 }
 
-// models/session_model.dart
 class Session {
   final String id;
   final String title;
