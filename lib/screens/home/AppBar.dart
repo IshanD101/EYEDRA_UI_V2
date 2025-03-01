@@ -39,4 +39,30 @@ class CustomAppBar {
       ),
     );
   }
+  static Widget _buildColorfulText(String text) {
+    final colors = [
+      const Color(0xFF74A3FF),
+      const Color(0xFF73C5FE),
+      const Color(0xFF73B7FE),
+      const Color(0xFF74A3FF),
+      const Color(0xFF7396FE),
+      const Color(0xFF7490FE),
+    ];
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < text.length; i++)
+          Text(
+            text[i],
+            style: TextStyle(
+              color: i < colors.length ? colors[i] : colors[i % colors.length],
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+            ),
+          ),
+      ],
+    );
+  }
 }
