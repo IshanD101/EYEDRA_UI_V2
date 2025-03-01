@@ -55,6 +55,17 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     child: Column(
     children: [
 
+      SizedBox(
+        height: 200,
+        child: ModelViewer(
+          src: 'assets/mascot/untitled.glb',
+          autoRotate: true,
+          cameraControls: true,
+          backgroundColor: Colors.transparent,
+        ),
+      ),
+      const Divider(color: Colors.white),
+
     ]
     )
     )
