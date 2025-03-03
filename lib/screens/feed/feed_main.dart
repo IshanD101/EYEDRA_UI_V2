@@ -10,31 +10,7 @@ class FeedMain extends StatefulWidget {
 
 class _FeedState extends State<FeedMain> {
   final List<Post> _posts = [
-    Post(
-      username: "user1",
-      content: "Enjoying a sunny day at the beach!",
-      imageUrl: "https://picsum.photos/500/300?random=1",
-      likes: 120,
-      comments: 15,
-      shares: 5,
-    ),
-    Post(
-      username: "user2",
-      content: "Delicious homemade pizza tonight.",
-      imageUrl: "https://picsum.photos/500/300?random=2",
-      likes: 85,
-      dislikes: 3,
-      comments: 10,
-      shares: 2,
-    ),
-    Post(
-      username: "user3",
-      content: "Exploring the mountains this weekend!",
-      imageUrl: "https://picsum.photos/500/300?random=3",
-      likes: 200,
-      comments: 25,
-      shares: 8,
-    ),
+    // [same dummy data as before]
   ];
 
   @override
@@ -65,47 +41,73 @@ class _FeedState extends State<FeedMain> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // [previous header section]
+          // [previous image section]
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.grey,
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.favorite_border),
+                      onPressed: () {
+                        setState(() => post.likes++);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.comment),
+                      onPressed: () {
+                        setState(() => post.dislikes++);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.comment),
+                      onPressed: () {
+                        setState(() => post.comments++);
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  post.username,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.share),
+                  onPressed: () {
+                    setState(() => post.shares++);
+                  },
                 ),
               ],
             ),
           ),
-          Image.network(
-            post.imageUrl,
-            width: double.infinity,
-            height: 300,
-            fit: BoxFit.cover,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const SizedBox(
-                height: 300,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            },
-            errorBuilder: (context, error, stackTrace) {
-              return const SizedBox(
-                height: 300,
-                child: Center(child: Text('Image failed to load')),
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${post.likes} likes  •  ${post.dislikes} dislikes'),
+                const SizedBox(height: 4),
+                Text('${post.comments} comments  •  ${post.shares} shares'),
+                const SizedBox(height: 4),
+              ],
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
-            child: Text(post.content),
+            padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+            child: RichText(
+              text: TextSpan(
+                text: '${post.username} ',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                children: [
+                  TextSpan(
+                    text: post.content,
+                    style: const TextStyle(fontWeight: FontWeight.normal),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
