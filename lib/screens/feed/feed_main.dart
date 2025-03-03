@@ -1,6 +1,6 @@
 import 'package:eyedra_ui_v2/models/post_model.dart';
-import 'package:eyedra_ui_v2/widgets/posts_widget.dart';
 import 'package:flutter/material.dart';
+
 
 final List<Post> dummyPosts = [
   Post(username: "user1", content: "Post 1", imageUrl: "https://picsum.photos/id/237/200/300"),
@@ -128,6 +128,21 @@ class PostDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(post.content),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "View all ${post.comments} comments",
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              child: Text(
+                "${post.shares} shares",
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ),
+            const SizedBox(height: 50),
           ],
         ),
       ),
