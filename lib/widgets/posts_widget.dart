@@ -27,10 +27,6 @@ class _PostWidgetState extends State<PostWidget> {
             // User info section
             Row(
               children: [
-                const CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://via.placeholder.com/50"), // Profile placeholder
-                ),
                 const SizedBox(width: 10),
                 Text(
                   widget.post.username,

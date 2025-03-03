@@ -43,6 +43,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  http: ^1.1.0
   model_viewer_plus: ^1.7.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
