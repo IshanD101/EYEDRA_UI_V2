@@ -98,6 +98,25 @@ class PostDetailScreen extends StatelessWidget {
                 },
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                post.username,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: [
+                  Icon(Icons.favorite_border),
+                  const SizedBox(width: 16),
+                  Icon(Icons.comment_outlined),
+                  const SizedBox(width: 16),
+                  Icon(Icons.share_outlined),
+                ],
+              ),
+            ),
           ],
         ),
       ),
