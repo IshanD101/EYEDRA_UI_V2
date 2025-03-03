@@ -7,6 +7,7 @@ import 'package:eyedra_ui_v2/screens/navigation.dart';
 import 'package:eyedra_ui_v2/screens/profile/profile_page.dart';
 import 'package:eyedra_ui_v2/screens/virtual_campfire/campfire_main.dart';
 import 'package:eyedra_ui_v2/widgets/feed_list.dart';
+import 'AppBar.dart'; // Import the custom AppBar
 
 void main() {
   runApp(MaterialApp(
@@ -46,43 +47,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Colors.white.withOpacity(0.9),
-        elevation: 4,
-        shadowColor: Colors.black26,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Colors.blue[800]),
-          splashRadius: 25,
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
-          },
-        ),
-        centerTitle: true,
-        title: Text(
-          titles[_currentIndex],
-          style: const TextStyle(
-            color: Colors.purple,
-            fontWeight: FontWeight.w600,
-            fontSize: 22,
-            fontFamily: 'Roboto',
-            letterSpacing: 1.5,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.person, color: Colors.blue[800]),
-            splashRadius: 25,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
-              );
-            },
-          ),
-        ],
+      // Use the custom glassmorphic app bar
+      appBar: CustomAppBar.buildGlassmorphicAppBar(
+        context,
+        _scaffoldKey,
+        titles[_currentIndex],
+            () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfilePage()),
+          );
+        },
       ),
       drawer: Drawer(
         child: SideBar(

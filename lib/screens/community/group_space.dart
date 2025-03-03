@@ -53,7 +53,7 @@ class _CommunityState extends State<Community> {
         {
           'id': '1',
           'name': 'Peaceful Yoga',
-          'imageUrl': 'https://example.com/photo.jpg',
+          'imageUrl': '',
           'description': 'A community for photography enthusiasts',
           'memberCount': 150,
           'createdAt': '2024-02-24T10:00:00Z',
@@ -61,7 +61,7 @@ class _CommunityState extends State<Community> {
         {
           'id': '2',
           'name': 'Book Readers',
-          'imageUrl': 'https://example.com/books.jpg',
+          'imageUrl': '',
           'description': 'Share your favorite books and discuss',
           'memberCount': 200,
           'createdAt': '2024-02-23T15:30:00Z',
