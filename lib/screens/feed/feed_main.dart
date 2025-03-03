@@ -9,7 +9,6 @@ class FeedMain extends StatefulWidget {
 }
 
 class _FeedState extends State<FeedMain> {
-  // Dummy data list (replace with DB fetch later)
   final List<Post> _posts = [
     Post(
       username: "user1",
@@ -28,6 +27,14 @@ class _FeedState extends State<FeedMain> {
       comments: 10,
       shares: 2,
     ),
+    Post(
+      username: "user3",
+      content: "Exploring the mountains this weekend!",
+      imageUrl: "https://picsum.photos/500/300?random=3",
+      likes: 200,
+      comments: 25,
+      shares: 8,
+    ),
   ];
 
   @override
@@ -44,40 +51,63 @@ class _FeedState extends State<FeedMain> {
         itemCount: _posts.length,
         itemBuilder: (context, index) {
           final post = _posts[index];
-          return Card(
-            color: Colors.white,
-            elevation: 0,
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          return _buildPostCard(post);
+        },
+      ),
+    );
+  }
+
+  Widget _buildPostCard(Post post) {
+    return Card(
+      color: Colors.white,
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.grey,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        post.username,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
+                const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.grey,
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-                  child: Text(post.content),
+                const SizedBox(width: 8),
+                Text(
+                  post.username,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
-          );
-        },
+          ),
+          Image.network(
+            post.imageUrl,
+            width: double.infinity,
+            height: 300,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return const SizedBox(
+                height: 300,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return const SizedBox(
+                height: 300,
+                child: Center(child: Text('Image failed to load')),
+              );
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
+            child: Text(post.content),
+          ),
+        ],
       ),
     );
   }
