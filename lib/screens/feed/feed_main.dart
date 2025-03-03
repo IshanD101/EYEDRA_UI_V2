@@ -2,6 +2,7 @@ import 'package:eyedra_ui_v2/models/post_model.dart';
 import 'package:flutter/material.dart';
 
 
+// Dummy data
 final List<Post> dummyPosts = [
   Post(username: "user1", content: "Post 1", imageUrl: "https://picsum.photos/id/237/200/300"),
   Post(username: "user2", content: "Post 2", imageUrl: "https://picsum.photos/id/238/200/300"),
@@ -28,7 +29,7 @@ class _FeedState extends State<FeedMain> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.only(top: 16.0),
+        padding: const EdgeInsets.only(top: 16.0), // Added top padding
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
@@ -57,7 +58,9 @@ class _FeedState extends State<FeedMain> {
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         color: Colors.grey[300],
-                        child: const Center(child: Icon(Icons.error)),
+                        child: const Center(
+                          child: Icon(Icons.error),
+                        ),
                       );
                     },
                   ),
@@ -93,7 +96,9 @@ class PostDetailScreen extends StatelessWidget {
                   return Container(
                     height: 400,
                     color: Colors.grey[300],
-                    child: const Center(child: Icon(Icons.error)),
+                    child: const Center(
+                      child: Icon(Icons.error),
+                    ),
                   );
                 },
               ),
@@ -102,7 +107,10 @@ class PostDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 post.username,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
             ),
             Padding(
