@@ -1,6 +1,7 @@
 import 'package:eyedra_ui_v2/models/post_model.dart';
 import 'package:flutter/material.dart';
 
+
 final List<Post> dummyPosts = [
   Post(username: "user1", content: "Post 1", imageUrl: "https://picsum.photos/id/237/200/300"),
   Post(username: "user2", content: "Post 2", imageUrl: "https://picsum.photos/id/238/200/300"),
@@ -36,10 +37,50 @@ class _FeedState extends State<FeedMain> {
           ),
           itemCount: dummyPosts.length,
           itemBuilder: (context, index) {
-            return Image.network(dummyPosts[index].imageUrl, fit: BoxFit.cover);
+            return Builder(
+              builder: (BuildContext context) {
+                return GestureDetector(
+                  onTap: () {
+                    try {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PostDetailScreen(post: dummyPosts[index]),
+                        ),
+                      );
+                    } catch (e) {
+                      print('Navigation error: $e');
+                    }
+                  },
+                  child: Image.network(
+                    dummyPosts[index].imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        child: const Center(child: Icon(Icons.error)),
+                      );
+                    },
+                  ),
+                );
+              },
+            );
           },
         ),
       ),
+    );
+  }
+}
+
+class PostDetailScreen extends StatelessWidget {
+  final Post post;
+
+  const PostDetailScreen({super.key, required this.post});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Container(),
     );
   }
 }
