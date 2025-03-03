@@ -1,6 +1,11 @@
 import 'package:eyedra_ui_v2/models/post_model.dart';
 import 'package:flutter/material.dart';
 
+final List<Post> dummyPosts = [
+  Post(username: "user1", content: "Post 1", imageUrl: "https://picsum.photos/id/237/200/300"),
+  Post(username: "user2", content: "Post 2", imageUrl: "https://picsum.photos/id/238/200/300"),
+];
+
 class FeedMain extends StatefulWidget {
   const FeedMain({super.key});
 
@@ -9,108 +14,11 @@ class FeedMain extends StatefulWidget {
 }
 
 class _FeedState extends State<FeedMain> {
-  final List<Post> _posts = [
-    // [same dummy data as before]
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Feed'),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        centerTitle: true,
-      ),
-      body: ListView.builder(
-        itemCount: _posts.length,
-        itemBuilder: (context, index) {
-          final post = _posts[index];
-          return _buildPostCard(post);
-        },
-      ),
-    );
-  }
-
-  Widget _buildPostCard(Post post) {
-    return Card(
-      color: Colors.white,
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // [previous header section]
-          // [previous image section]
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.favorite_border),
-                      onPressed: () {
-                        setState(() => post.likes++);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.comment),
-                      onPressed: () {
-                        setState(() => post.dislikes++);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.comment),
-                      onPressed: () {
-                        setState(() => post.comments++);
-                      },
-                    ),
-                  ],
-                ),
-                IconButton(
-                  icon: const Icon(Icons.share),
-                  onPressed: () {
-                    setState(() => post.shares++);
-                  },
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('${post.likes} likes  •  ${post.dislikes} dislikes'),
-                const SizedBox(height: 4),
-                Text('${post.comments} comments  •  ${post.shares} shares'),
-                const SizedBox(height: 4),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-            child: RichText(
-              text: TextSpan(
-                text: '${post.username} ',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-                children: [
-                  TextSpan(
-                    text: post.content,
-                    style: const TextStyle(fontWeight: FontWeight.normal),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+      body: Container(),
     );
   }
 }
