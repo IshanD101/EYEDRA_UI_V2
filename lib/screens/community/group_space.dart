@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/community_space_model.dart';
+import 'group_chat.dart';  // Import the GroupChat widget
 
 class Community extends StatefulWidget {
   const Community({super.key});
@@ -34,7 +35,7 @@ class _CommunityState extends State<Community> {
       } else {
         _filteredGroups = _communityGroups
             .where((group) =>
-                group.name.toLowerCase().contains(query.toLowerCase()))
+            group.name.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
     });
@@ -54,7 +55,7 @@ class _CommunityState extends State<Community> {
           'id': '1',
           'name': 'Peaceful Yoga',
           'imageUrl': '',
-          'description': 'A community for photography enthusiasts',
+          'description': 'A community for yoga enthusiasts',
           'memberCount': 150,
           'createdAt': '2024-02-24T10:00:00Z',
         },
@@ -66,10 +67,26 @@ class _CommunityState extends State<Community> {
           'memberCount': 200,
           'createdAt': '2024-02-23T15:30:00Z',
         },
+        {
+          'id': '3',
+          'name': 'Tech Talk',
+          'imageUrl': '',
+          'description': 'Discuss the latest in technology',
+          'memberCount': 325,
+          'createdAt': '2024-02-22T12:15:00Z',
+        },
+        {
+          'id': '4',
+          'name': 'Foodies Club',
+          'imageUrl': '',
+          'description': 'Share recipes and food experiences',
+          'memberCount': 178,
+          'createdAt': '2024-02-21T09:30:00Z',
+        },
       ];
 
       final groups =
-          sampleData.map((json) => CommunityGroup.fromJson(json)).toList();
+      sampleData.map((json) => CommunityGroup.fromJson(json)).toList();
 
       setState(() {
         _communityGroups = groups;
@@ -82,6 +99,15 @@ class _CommunityState extends State<Community> {
         _isLoading = false;
       });
     }
+  }
+
+  void _navigateToGroupChat(CommunityGroup group) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GroupChat(communityGroup: group),
+      ),
+    );
   }
 
   @override
@@ -104,12 +130,12 @@ class _CommunityState extends State<Community> {
               prefixIcon: const Icon(Icons.search, color: Colors.grey),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.grey),
-                      onPressed: () {
-                        _searchController.clear();
-                        _filterGroups('');
-                      },
-                    )
+                icon: const Icon(Icons.clear, color: Colors.grey),
+                onPressed: () {
+                  _searchController.clear();
+                  _filterGroups('');
+                },
+              )
                   : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
@@ -206,9 +232,7 @@ class _CommunityState extends State<Community> {
               groupName: group.name,
               imageUrl: group.imageUrl,
               memberCount: group.memberCount,
-              onTap: () {
-                print('Tapped on ${group.name}');
-              },
+              onTap: () => _navigateToGroupChat(group),
             );
           },
         ),
