@@ -112,6 +112,11 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             const SizedBox(height: 16),
+            IconButton(
+              icon: Icon(Icons.add_circle_outline, color: Colors.blue[600], size: 36),
+              onPressed: () {},
+            ),
+            const SizedBox(height: 8),
             TabBar(
               indicatorColor: Colors.purple,
               labelColor: Colors.blue[800],
