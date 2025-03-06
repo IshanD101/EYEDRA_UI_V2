@@ -21,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           title: Text(
             "User user",
-            style: TextStyle(color: Colors.blue[900]),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue[900]),
           ),
           backgroundColor: Colors.grey[900],
           elevation: 0,
@@ -52,15 +52,17 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Container(
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: Colors.grey[900],
+                  color: Color(0xFFB39DDB).withOpacity(0.5),
                   borderRadius: BorderRadius.circular(16.0),
+                  border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+                      color: Color(0xFFB39DDB).withOpacity(0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
                     ),
                   ],
+                  backgroundBlendMode: BlendMode.overlay,
                 ),
                 child: Column(
                   children: [
@@ -72,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: const Icon(Icons.person, size: 50, color: Colors.grey),
                         ),
                         Positioned(
-                          bottom: 0,
+                          bottom: -10,
                           right: 0,
                           child: GestureDetector(
                             onTap: () => _editProfileWindow(context),
@@ -88,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 12),
                     Text(
                       nameController.text,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -118,8 +120,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 8),
             TabBar(
-              indicatorColor: Colors.purple,
-              labelColor: Colors.blue[800],
+              indicator: BoxDecoration(),
+              labelColor: Colors.purple[800],
               unselectedLabelColor: Colors.grey,
               tabs: const [
                 Tab(icon: Icon(Icons.grid_view_outlined)),
