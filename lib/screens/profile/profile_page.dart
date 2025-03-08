@@ -219,6 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  // Add Post Button Only
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: ClipRRect(
@@ -235,46 +236,33 @@ class _ProfilePageState extends State<ProfilePage> {
                               width: 1,
                             ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Icon(
-                                Icons.grid_view_outlined,
-                                color: Colors.blue[400],
-                                size: 28,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.blue.withOpacity(0.3),
-                                      blurRadius: 15,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.add_circle,
-                                    color: Colors.blue[400],
-                                    size: 72,
+                          child: Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blue.withOpacity(0.3),
+                                    blurRadius: 15,
+                                    spreadRadius: 2,
                                   ),
-                                  onPressed: () {},
+                                ],
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.add_circle,
+                                  color: Colors.blue[400],
+                                  size: 72,
                                 ),
+                                onPressed: () {},
                               ),
-                              Icon(
-                                Icons.list_alt_outlined,
-                                color: Colors.blue[400],
-                                size: 28,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   TabBar(
                     indicatorColor: Colors.blue[400],
                     labelColor: Colors.blue[400],
