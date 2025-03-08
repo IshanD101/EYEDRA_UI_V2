@@ -32,19 +32,16 @@ class _FeedState extends State<FeedMain> {
       appBar: AppBar(
         title: Text(
           "Explore",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue[900]),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.grey[900]?.withOpacity(0.7),
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: Colors.blue[800]),
+            icon: Icon(Icons.search, color: Colors.white),
             onPressed: () {},
           ),
-          IconButton(
-            icon: Icon(Icons.notifications, color: Colors.blue[800]),
-            onPressed: () {},
-          ),
+          // Notification icon removed
         ],
         flexibleSpace: ClipRect(
           child: BackdropFilter(
@@ -230,7 +227,7 @@ class PostDetailScreen extends StatelessWidget {
         ),
         title: Text(
           "Explore",
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue[900]),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.grey[900]?.withOpacity(0.7),
         elevation: 0,
