@@ -75,12 +75,12 @@ class _FeedState extends State<FeedMain> {
           Padding(
             padding: EdgeInsets.only(top: AppBar().preferredSize.height + 20),
             child: GridView.builder(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(12.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.8,
+                crossAxisCount: 3, // Changed to show 3 posts per row
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.75,
               ),
               itemCount: dummyPosts.length,
               itemBuilder: (context, index) {
@@ -97,13 +97,13 @@ class _FeedState extends State<FeedMain> {
                     }
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: Colors.white.withOpacity(0.1),
                             width: 1,
@@ -122,123 +122,50 @@ class _FeedState extends State<FeedMain> {
                             Expanded(
                               child: ClipRRect(
                                 borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  topRight: Radius.circular(16),
+                                  topLeft: Radius.circular(12),
+                                  topRight: Radius.circular(12),
                                 ),
-                                child: Stack(
-                                  fit: StackFit.expand,
-                                  children: [
-                                    Image.network(
-                                      dummyPosts[index].imageUrl,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Container(
-                                          color: Colors.grey[800],
-                                          child: const Center(
-                                            child: Icon(Icons.error, color: Colors.white54),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    // Gradient overlay for better text visibility
-                                    Positioned(
-                                      bottom: 0,
-                                      left: 0,
-                                      right: 0,
-                                      child: Container(
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Colors.transparent,
-                                              Colors.black.withOpacity(0.7),
-                                            ],
-                                          ),
-                                        ),
+                                child: Image.network(
+                                  dummyPosts[index].imageUrl,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Colors.grey[800],
+                                      child: const Center(
+                                        child: Icon(Icons.error, color: Colors.white54),
                                       ),
-                                    ),
-                                  ],
+                                    );
+                                  },
                                 ),
                               ),
                             ),
+                            // Minimized user info - only username
                             Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 12,
-                                        backgroundColor: Colors.blue.withOpacity(0.2),
-                                        child: const Icon(
-                                          Icons.person,
-                                          size: 14,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        dummyPosts[index].username,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    dummyPosts[index].content,
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.7),
-                                      fontSize: 12,
+                                  CircleAvatar(
+                                    radius: 10,
+                                    backgroundColor: Colors.blue.withOpacity(0.2),
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 12,
+                                      color: Colors.white,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.favorite_border,
-                                            size: 16,
-                                            color: Colors.blue[400],
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            "${dummyPosts[index].likes}",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white.withOpacity(0.7),
-                                            ),
-                                          ),
-                                        ],
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      dummyPosts[index].username,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: Colors.white,
                                       ),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.comment_outlined,
-                                            size: 16,
-                                            color: Colors.blue[400],
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            "${dummyPosts[index].comments}",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white.withOpacity(0.7),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
