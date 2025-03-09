@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '/models/message.dart';
+import '/models/group.dart';
+import '/models/group_member.dart';
 import '/widgets/chat_bubble.dart';
 import '/widgets/message_input.dart';
 import '/widgets/glass_app_bar.dart';
@@ -22,15 +24,36 @@ class GroupChatScreen extends StatefulWidget {
 class _GroupChatScreenState extends State<GroupChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final List<ChatMessage> _messages = [];
+  late Group _group;
 
   @override
   void initState() {
     super.initState();
     _loadInitialMessages();
+    _loadGroupData();
+  }
+
+  void _loadGroupData() {
+    // In a real app, this would fetch from an API or database
+    _group = Group(
+      id: widget.groupId,
+      name: widget.groupName,
+      description: 'A group for team discussions and updates',
+      members: [
+        GroupMember(
+          id: 'currentUser',
+          name: 'You',
+          isAdmin: true,
+        ),
+        GroupMember(
+          id: 'jane',
+          name: 'Jane',
+        ),
+      ],
+    );
   }
 
   void _loadInitialMessages() {
-    // This would typically fetch messages from a database or API
     setState(() {
       _messages.addAll([
         ChatMessage(
@@ -64,6 +87,22 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     // Here you would typically send the message to your backend
   }
 
+  void _handleAddMember(GroupMember newMember) {
+    setState(() {
+      _group.members.add(newMember);
+    });
+
+    // Show confirmation
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${newMember.name} added to the group'),
+        backgroundColor: Colors.green[800],
+      ),
+    );
+
+    // In a real app, you would update this on your backend
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
@@ -78,6 +117,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       appBar: GlassAppBar(
         title: widget.groupName,
         onBackPressed: () => Navigator.pop(context),
+        group: _group,
+        onMemberAdded: _handleAddMember,
       ),
       body: Stack(
         children: [
