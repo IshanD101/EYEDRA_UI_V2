@@ -111,19 +111,7 @@ class _CommunityState extends State<Community> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.grey[900]?.withOpacity(0.7),
-        // Title property removed completely
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              color: Colors.transparent,
-            ),
-          ),
-        ),
-      ),
+      // AppBar removed completely
       body: Stack(
         children: [
           // Background gradient
@@ -140,12 +128,14 @@ class _CommunityState extends State<Community> {
             ),
           ),
           // Content
-          Column(
-            children: [
-              SizedBox(height: AppBar().preferredSize.height + 1),
-              _buildSearchBar(),
-              Expanded(child: _buildBody()),
-            ],
+          SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 10), // Small top padding
+                _buildSearchBar(),
+                Expanded(child: _buildBody()),
+              ],
+            ),
           ),
         ],
       ),
