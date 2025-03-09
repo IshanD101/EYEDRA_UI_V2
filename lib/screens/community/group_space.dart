@@ -114,14 +114,7 @@ class _CommunityState extends State<Community> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.grey[900]?.withOpacity(0.7),
-        title: const Text(
-          'Community Space',
-          style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white
-          ),
-        ),
+        // Title property removed completely
         flexibleSpace: ClipRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -149,7 +142,7 @@ class _CommunityState extends State<Community> {
           // Content
           Column(
             children: [
-              SizedBox(height: AppBar().preferredSize.height + 20),
+              SizedBox(height: AppBar().preferredSize.height + 1),
               _buildSearchBar(),
               Expanded(child: _buildBody()),
             ],
