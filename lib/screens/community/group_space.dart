@@ -1,8 +1,26 @@
 import 'package:flutter/material.dart';
-import '../../models/community_space_model.dart';
+import 'package:glassmorphism/glassmorphism.dart';
+import 'group_chat_screen.dart';
+
+// Simplified model class to avoid import issues
+class CommunityGroup {
+  final String id;
+  final String name;
+  final String imageUrl;
+  final String? description;
+  final int? memberCount;
+
+  CommunityGroup({
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+    this.description,
+    this.memberCount,
+  });
+}
 
 class Community extends StatefulWidget {
-  const Community({super.key});
+  const Community({Key? key}) : super(key: key);
 
   @override
   State<Community> createState() => _CommunityState();
@@ -18,7 +36,7 @@ class _CommunityState extends State<Community> {
   @override
   void initState() {
     super.initState();
-    _fetchCommunityGroups();
+    _loadGroups();
   }
 
   @override
@@ -33,115 +51,107 @@ class _CommunityState extends State<Community> {
         _filteredGroups = List.from(_communityGroups);
       } else {
         _filteredGroups = _communityGroups
-            .where((group) =>
-                group.name.toLowerCase().contains(query.toLowerCase()))
+            .where((group) => group.name.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
     });
   }
 
-  Future<void> _fetchCommunityGroups() async {
+  void _loadGroups() {
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-
-      final List<Map<String, dynamic>> sampleData = [
-        {
-          'id': '1',
-          'name': 'Peaceful Yoga',
-          'imageUrl': '',
-          'description': 'A community for photography enthusiasts',
-          'memberCount': 150,
-          'createdAt': '2024-02-24T10:00:00Z',
-        },
-        {
-          'id': '2',
-          'name': 'Book Readers',
-          'imageUrl': '',
-          'description': 'Share your favorite books and discuss',
-          'memberCount': 200,
-          'createdAt': '2024-02-23T15:30:00Z',
-        },
+    // Mock data for front-end demo
+    Future.delayed(const Duration(milliseconds: 800), () {
+      final groups = [
+        CommunityGroup(
+          id: '1',
+          name: 'Peaceful Yoga',
+          imageUrl: '',
+          description: 'A relaxing community for yoga lovers',
+          memberCount: 150,
+        ),
+        CommunityGroup(
+          id: '2',
+          name: 'Book Readers',
+          imageUrl: '',
+          description: 'Discuss and share your favorite books!',
+          memberCount: 200,
+        ),
+        CommunityGroup(
+          id: '3',
+          name: 'Fitness Club',
+          imageUrl: '',
+          description: 'Workout tips and motivation',
+          memberCount: 320,
+        ),
+        CommunityGroup(
+          id: '4',
+          name: 'Food Club',
+          imageUrl: '',
+          description: 'All things technology and gadgets',
+          memberCount: 175,
+        ),
       ];
 
-      final groups =
-          sampleData.map((json) => CommunityGroup.fromJson(json)).toList();
-
-      setState(() {
-        _communityGroups = groups;
-        _filteredGroups = List.from(groups);
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = 'Failed to load community groups';
-        _isLoading = false;
-      });
-    }
+      if (mounted) {
+        setState(() {
+          _communityGroups = groups;
+          _filteredGroups = List.from(groups);
+          _isLoading = false;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blueGrey.shade900,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Container(
-          height: 45,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: TextField(
-            controller: _searchController,
-            onChanged: _filterGroups,
-            decoration: InputDecoration(
-              hintText: 'Search communities...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.grey),
-                      onPressed: () {
-                        _searchController.clear();
-                        _filterGroups('');
-                      },
-                    )
-                  : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-            ),
-          ),
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          'Community Space',
+          style: TextStyle(color: Colors.white),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _fetchCommunityGroups,
-            color: Theme.of(context).primaryColor,
-          ),
+      ),
+      body: Column(
+        children: [
+          _buildSearchBar(),
+          Expanded(child: _buildBody()),
         ],
       ),
-      body: _buildBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Implement create community functionality
-        },
-        child: const Icon(Icons.add),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: _searchController,
+        onChanged: _filterGroups,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: 'Search communities...',
+          hintStyle: TextStyle(color: Colors.grey.shade400),
+          prefixIcon: const Icon(Icons.search, color: Colors.grey),
+          filled: true,
+          fillColor: Colors.blueGrey.shade800,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_error != null) {
@@ -149,14 +159,11 @@ class _CommunityState extends State<Community> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              _error!,
-              style: const TextStyle(color: Colors.red),
-            ),
+            Text(_error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _fetchCommunityGroups,
-              child: const Text('Retry'),
+              onPressed: _loadGroups,
+              child: const Text('Try Again'),
             ),
           ],
         ),
@@ -168,131 +175,90 @@ class _CommunityState extends State<Community> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search_off,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            const Icon(Icons.search_off, size: 60, color: Colors.white54),
             const SizedBox(height: 16),
             Text(
               _searchController.text.isEmpty
                   ? 'No communities found'
-                  : 'No communities match your search',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
-              ),
+                  : 'No communities match "${_searchController.text}"',
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: _fetchCommunityGroups,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 0.85,
-          ),
-          itemCount: _filteredGroups.length,
-          itemBuilder: (context, index) {
-            final group = _filteredGroups[index];
-            return CommunityCard(
-              groupName: group.name,
-              imageUrl: group.imageUrl,
-              memberCount: group.memberCount,
-              onTap: () {
-                print('Tapped on ${group.name}');
-              },
-            );
-          },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.85,
         ),
+        itemCount: _filteredGroups.length,
+        itemBuilder: (context, index) {
+          final group = _filteredGroups[index];
+          return CommunityCard(group: group);
+        },
       ),
     );
   }
 }
 
-// CommunityCard widget remains the same
 class CommunityCard extends StatelessWidget {
-  final String groupName;
-  final String imageUrl;
-  final int? memberCount;
-  final VoidCallback onTap;
+  final CommunityGroup group;
 
-  const CommunityCard({
-    super.key,
-    required this.groupName,
-    required this.imageUrl,
-    this.memberCount,
-    required this.onTap,
-  });
+  const CommunityCard({Key? key, required this.group}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GroupChatScreen(
+              groupId: group.id,
+              groupName: group.name,
+            ),
+          ),
+        );
+      },
+      child: GlassmorphicContainer(
+        width: 150,
+        height: 180,
+        borderRadius: 20,
+        blur: 15,
+        border: 2,
+        linearGradient: LinearGradient(
+          colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.05)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderGradient: LinearGradient(
+          colors: [Colors.white.withOpacity(0.4), Colors.white.withOpacity(0.1)],
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.group,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
+            const Icon(Icons.group, size: 50, color: Colors.white),
+            const SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                children: [
-                  Text(
-                    groupName,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                  ),
-                  if (memberCount != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '$memberCount members',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ],
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                group.name,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
             ),
+            const SizedBox(height: 5),
+            if (group.memberCount != null)
+              Text(
+                '${group.memberCount} members',
+                style: TextStyle(color: Colors.grey.shade300, fontSize: 12),
+              ),
           ],
         ),
       ),

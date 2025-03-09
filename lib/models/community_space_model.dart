@@ -23,7 +23,7 @@ class CommunityGroup {
       description: json['description'],
       memberCount: json['memberCount'],
       createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
     );
   }
 
