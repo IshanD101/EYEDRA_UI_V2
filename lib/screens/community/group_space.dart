@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:glassmorphism/glassmorphism.dart';
+import 'dart:ui';
 import 'group_chat_screen.dart';
 
 // Simplified model class to avoid import issues
@@ -109,19 +109,51 @@ class _CommunityState extends State<Community> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey.shade900,
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.grey[900]?.withOpacity(0.7),
         title: const Text(
           'Community Space',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white
+          ),
+        ),
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              color: Colors.transparent,
+            ),
+          ),
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          _buildSearchBar(),
-          Expanded(child: _buildBody()),
+          // Background gradient
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.blue[900]!.withOpacity(0.3),
+                  Colors.black,
+                ],
+              ),
+            ),
+          ),
+          // Content
+          Column(
+            children: [
+              SizedBox(height: AppBar().preferredSize.height + 20),
+              _buildSearchBar(),
+              Expanded(child: _buildBody()),
+            ],
+          ),
         ],
       ),
     );
@@ -130,19 +162,31 @@ class _CommunityState extends State<Community> {
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        controller: _searchController,
-        onChanged: _filterGroups,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          hintText: 'Search communities...',
-          hintStyle: TextStyle(color: Colors.grey.shade400),
-          prefixIcon: const Icon(Icons.search, color: Colors.grey),
-          filled: true,
-          fillColor: Colors.blueGrey.shade800,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1.5,
+              ),
+            ),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _filterGroups,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Search communities...',
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.7)),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              ),
+            ),
           ),
         ),
       ),
@@ -161,9 +205,32 @@ class _CommunityState extends State<Community> {
           children: [
             Text(_error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadGroups,
-              child: const Text('Try Again'),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: _loadGroups,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Try Again'),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -175,7 +242,7 @@ class _CommunityState extends State<Community> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.search_off, size: 60, color: Colors.white54),
+            Icon(Icons.search_off, size: 60, color: Colors.white.withOpacity(0.5)),
             const SizedBox(height: 16),
             Text(
               _searchController.text.isEmpty
@@ -226,40 +293,89 @@ class CommunityCard extends StatelessWidget {
           ),
         );
       },
-      child: GlassmorphicContainer(
-        width: 150,
-        height: 180,
-        borderRadius: 20,
-        blur: 15,
-        border: 2,
-        linearGradient: LinearGradient(
-          colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.05)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderGradient: LinearGradient(
-          colors: [Colors.white.withOpacity(0.4), Colors.white.withOpacity(0.1)],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.group, size: 50, color: Colors.white),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                group.name,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16.0),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(
+            width: 150,
+            height: 180,
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.1),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
+              ],
             ),
-            const SizedBox(height: 5),
-            if (group.memberCount != null)
-              Text(
-                '${group.memberCount} members',
-                style: TextStyle(color: Colors.grey.shade300, fontSize: 12),
-              ),
-          ],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.3),
+                        blurRadius: 20,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white.withOpacity(0.2),
+                    child: Icon(
+                      Icons.group,
+                      size: 35,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Text(
+                  group.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 5),
+                if (group.memberCount != null)
+                  Text(
+                    '${group.memberCount} members',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 12,
+                    ),
+                  ),
+                if (group.description != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      group.description!,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.6),
+                        fontSize: 10,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
