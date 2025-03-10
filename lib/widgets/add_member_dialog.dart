@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'dart:math' show min;
 import '../models/group_member.dart';
 
 class AddMemberDialog extends StatefulWidget {
@@ -81,13 +82,24 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions for responsive sizing
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 600;
+
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
         backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: isSmallScreen ? 16 : 32,
+          vertical: 24,
+        ),
         child: Container(
-          width: double.maxFinite,
-          constraints: const BoxConstraints(maxWidth: 400),
+          width: double.infinity,
+          constraints: BoxConstraints(
+            maxWidth: 400,
+            maxHeight: screenSize.height * 0.8,
+          ),
           decoration: BoxDecoration(
             color: Colors.grey[900]?.withOpacity(0.9),
             borderRadius: BorderRadius.circular(16),
@@ -103,27 +115,37 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildHeader(),
-              _buildSearchInput(),
-              _buildResultsList(),
-              _buildCloseButton(context),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Use LayoutBuilder to get the actual available space
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildHeader(constraints),
+                  _buildSearchInput(constraints),
+                  Flexible(
+                    child: _buildResultsList(constraints),
+                  ),
+                  _buildCloseButton(context, constraints),
+                ],
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BoxConstraints constraints) {
+    // Responsive font size based on container width
+    final fontSize = constraints.maxWidth < 300 ? 18.0 : 20.0;
+
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(constraints.maxHeight < 500 ? 12 : 16),
       child: Text(
         'Add Group Members',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: fontSize,
           fontWeight: FontWeight.bold,
           color: Colors.white.withOpacity(0.9),
         ),
@@ -131,9 +153,12 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
     );
   }
 
-  Widget _buildSearchInput() {
+  Widget _buildSearchInput(BoxConstraints constraints) {
+    // Adjust padding based on available space
+    final verticalPadding = constraints.maxHeight < 500 ? 4.0 : 8.0;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: verticalPadding),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.1),
@@ -145,18 +170,25 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
         ),
         child: TextField(
           controller: _searchController,
-          style: TextStyle(color: Colors.white.withOpacity(0.9)),
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: constraints.maxWidth < 300 ? 14 : 16,
+          ),
           decoration: InputDecoration(
             hintText: 'Search contacts...',
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+            hintStyle: TextStyle(
+              color: Colors.white.withOpacity(0.5),
+              fontSize: constraints.maxWidth < 300 ? 14 : 16,
+            ),
             prefixIcon: Icon(
               Icons.search,
               color: Colors.white.withOpacity(0.5),
+              size: constraints.maxWidth < 300 ? 20 : 24,
             ),
             border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
+            contentPadding: EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: 12,
+              vertical: constraints.maxHeight < 500 ? 8 : 12,
             ),
           ),
         ),
@@ -164,10 +196,13 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
     );
   }
 
-  Widget _buildResultsList() {
+  Widget _buildResultsList(BoxConstraints parentConstraints) {
+    // Calculate appropriate list height
+    final listMaxHeight = parentConstraints.maxHeight * 0.6;
+
     if (_isLoading) {
-      return const Padding(
-        padding: EdgeInsets.all(20),
+      return SizedBox(
+        height: 80,
         child: Center(
           child: CircularProgressIndicator(),
         ),
@@ -175,33 +210,52 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
     }
 
     if (_searchResults.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(20),
+      return SizedBox(
+        height: 80,
         child: Center(
           child: Text(
             'No contacts found',
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
+              fontSize: parentConstraints.maxWidth < 300 ? 14 : 16,
             ),
           ),
         ),
       );
     }
 
+    // Responsive list that adjusts to available space
     return Container(
-      constraints: const BoxConstraints(maxHeight: 300),
+      constraints: BoxConstraints(
+        maxHeight: listMaxHeight,
+        minHeight: min(80, listMaxHeight),
+      ),
       child: ListView.builder(
         shrinkWrap: true,
         itemCount: _searchResults.length,
+        padding: const EdgeInsets.symmetric(vertical: 4),
         itemBuilder: (context, index) {
           final contact = _searchResults[index];
+          // Adjust tile height based on available vertical space
+          final isCompactMode = parentConstraints.maxHeight < 500;
+
           return ListTile(
+            visualDensity: VisualDensity(
+              horizontal: 0,
+              vertical: isCompactMode ? -2 : 0,
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: isCompactMode ? 0 : 4,
+            ),
             leading: CircleAvatar(
+              radius: isCompactMode ? 18 : 20,
               backgroundColor: Colors.blue[800]?.withOpacity(0.2),
               child: Text(
                 contact.name.substring(0, 1).toUpperCase(),
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
+                  fontSize: isCompactMode ? 14 : 16,
                 ),
               ),
             ),
@@ -209,12 +263,14 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
               contact.name,
               style: TextStyle(
                 color: Colors.white.withOpacity(0.9),
+                fontSize: parentConstraints.maxWidth < 300 ? 14 : 16,
               ),
             ),
             trailing: IconButton(
               icon: Icon(
                 Icons.add_circle_outline,
                 color: Colors.blue[300],
+                size: parentConstraints.maxWidth < 300 ? 20 : 24,
               ),
               onPressed: () {
                 widget.onMemberAdded(contact);
@@ -227,9 +283,14 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
     );
   }
 
-  Widget _buildCloseButton(BuildContext context) {
+  Widget _buildCloseButton(BuildContext context, BoxConstraints constraints) {
+    // Adjust button size based on container size
+    final isCompactMode = constraints.maxHeight < 500;
+    final horizontalPadding = isCompactMode ? 12.0 : 24.0;
+    final verticalPadding = isCompactMode ? 8.0 : 12.0;
+
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isCompactMode ? 12 : 16),
       child: ElevatedButton(
         onPressed: () => Navigator.of(context).pop(),
         style: ElevatedButton.styleFrom(
@@ -241,12 +302,16 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
               width: 1,
             ),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+          padding: EdgeInsets.symmetric(
+            vertical: verticalPadding,
+            horizontal: horizontalPadding,
+          ),
         ),
         child: Text(
           'Cancel',
           style: TextStyle(
             color: Colors.white.withOpacity(0.9),
+            fontSize: constraints.maxWidth < 300 ? 14 : 16,
           ),
         ),
       ),
