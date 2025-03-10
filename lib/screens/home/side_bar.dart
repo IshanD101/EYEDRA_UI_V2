@@ -9,116 +9,117 @@ class SideBar extends StatefulWidget {
   State<SideBar> createState() => _SideBarState();
 }
 
-class _SideBarState extends State<SideBar> {
+class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin {
   int? hoveredIndex;
   int? selectedIndex;
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
-        topRight: Radius.circular(20),
-        bottomRight: Radius.circular(20),
+        topRight: Radius.circular(24),
+        bottomRight: Radius.circular(24),
       ),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.6,
+          width: MediaQuery.of(context).size.width * 0.75,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.blue[900]!.withOpacity(0.4),
-                Colors.indigo[900]!.withOpacity(0.85),
+                Colors.blue.shade900.withOpacity(0.4),
+                Colors.indigo.shade900.withOpacity(0.8),
               ],
+              stops: const [0.3, 1.0],
             ),
             borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(20),
-              bottomRight: Radius.circular(20),
+              topRight: Radius.circular(24),
+              bottomRight: Radius.circular(24),
             ),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withOpacity(0.15),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withOpacity(0.15),
-                blurRadius: 20,
+                color: Colors.blue.shade800.withOpacity(0.2),
+                blurRadius: 25,
                 spreadRadius: 5,
               ),
             ],
           ),
           child: ListView(
             padding: EdgeInsets.zero,
+            physics: const BouncingScrollPhysics(),
             children: [
-              // Header section with improved styling
+              // Header
               ClipRRect(
                 borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(20),
+                  topRight: Radius.circular(24),
                 ),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          Colors.white.withOpacity(0.15),
-                          Colors.blue[800]!.withOpacity(0.3),
+                          Colors.blue.shade900.withOpacity(0.3),
+                          Colors.indigo.shade900.withOpacity(0.6),
                         ],
                       ),
                       borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(20),
+                        topRight: Radius.circular(24),
                       ),
                       border: Border(
                         bottom: BorderSide(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withOpacity(0.1),
                           width: 1,
                         ),
                       ),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.remove_red_eye,
+                            color: Colors.blue.shade100,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
                         Text(
                           'EYEDRA',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
+                            color: Colors.blue.shade50,
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.2,
-                            shadows: [
-                              Shadow(
-                                color: Colors.blue.withOpacity(0.6),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[800]!.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: const Text(
-                            'Menu',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
                           ),
                         ),
                       ],
@@ -126,13 +127,40 @@ class _SideBarState extends State<SideBar> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 16),
 
-              // Styled menu items
+              // Menu Items
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'MENU',
+                  style: TextStyle(
+                    color: Colors.blue.shade100.withOpacity(0.6),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
               _buildMenuItem(Icons.info_outline, 'About', 0),
-              _buildMenuItem(Icons.lock_outline, 'Privacy Policy', 1),
+              _buildMenuItem(Icons.privacy_tip_outlined, 'Privacy Policy', 1),
               _buildMenuItem(Icons.local_fire_department_outlined, 'Campfire', 2),
-              _buildMenuItem(Icons.headset_mic, 'Listener', 3),
+              _buildMenuItem(Icons.headset_mic_outlined, 'Listener', 3),
+
+              // Divider
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Divider(
+                  color: Colors.white.withOpacity(0.1),
+                  thickness: 1,
+                ),
+              ),
+
+              // Additional options
+              _buildMenuItem(Icons.settings_outlined, 'Settings', 4),
+              _buildMenuItem(Icons.help_outline, 'Help Center', 5),
             ],
           ),
         ),
@@ -162,106 +190,71 @@ class _SideBarState extends State<SideBar> {
           });
           widget.onMenuItemSelected(index);
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: isSelected
-                        ? [
-                      Colors.blue[700]!.withOpacity(0.6),
-                      Colors.blue[900]!.withOpacity(0.4),
-                    ]
-                        : isHovered
-                        ? [
-                      Colors.white.withOpacity(0.15),
-                      Colors.white.withOpacity(0.05),
-                    ]
-                        : [
-                      Colors.white.withOpacity(0.08),
-                      Colors.white.withOpacity(0.04),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: isSelected
-                        ? Colors.white.withOpacity(0.3)
-                        : isHovered
-                        ? Colors.white.withOpacity(0.2)
-                        : Colors.white.withOpacity(0.1),
-                    width: isHovered || isSelected ? 1.5 : 1,
-                  ),
-                  boxShadow: isHovered || isSelected
-                      ? [
-                    BoxShadow(
-                      color: Colors.blue.withOpacity(isSelected ? 0.3 : 0.2),
-                      blurRadius: 10,
-                      spreadRadius: 1,
-                    ),
-                  ]
-                      : [],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Colors.white.withOpacity(0.2)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        icon,
-                        color: isSelected || isHovered
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.7),
-                        size: 22,
-                      ),
-                    ),
-                    title: Text(
-                      title,
-                      style: TextStyle(
-                        color: isSelected || isHovered
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.8),
-                        fontSize: 16,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : isHovered
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                    trailing: isSelected
-                        ? Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.5),
-                            blurRadius: 4,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                    )
-                        : null,
-                  ),
-                ),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Colors.blue.shade800.withOpacity(0.3)
+                : isHovered
+                ? Colors.white.withOpacity(0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected
+                  ? Colors.blue.shade400.withOpacity(0.5)
+                  : isHovered
+                  ? Colors.white.withOpacity(0.15)
+                  : Colors.transparent,
+              width: 1.5,
+            ),
+            boxShadow: isHovered || isSelected
+                ? [
+              BoxShadow(
+                color: Colors.blue.shade900.withOpacity(0.2),
+                blurRadius: 8,
+                spreadRadius: 1,
+              ),
+            ]
+                : [],
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            leading: Icon(
+              icon,
+              color: isSelected
+                  ? Colors.blue.shade300
+                  : isHovered
+                  ? Colors.blue.shade100
+                  : Colors.blue.shade100.withOpacity(0.7),
+              size: 22,
+            ),
+            title: Text(
+              title,
+              style: TextStyle(
+                color: isSelected
+                    ? Colors.blue.shade300
+                    : isHovered
+                    ? Colors.blue.shade100
+                    : Colors.blue.shade100.withOpacity(0.7),
+                fontSize: 16,
+                fontWeight: isSelected || isHovered
+                    ? FontWeight.w600
+                    : FontWeight.w400,
+                letterSpacing: 0.5,
               ),
             ),
+            trailing: isSelected
+                ? Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: Colors.blue.shade300,
+                shape: BoxShape.circle,
+              ),
+            )
+                : null,
           ),
         ),
       ),
@@ -274,16 +267,20 @@ void showSideBar(BuildContext context, Function(int) onMenuItemSelected) {
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
+    transitionAnimationController: AnimationController(
+      vsync: Navigator.of(context).overlay!,
+      duration: const Duration(milliseconds: 300),
+    ),
     builder: (BuildContext context) {
       return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: Container(
-          height: MediaQuery.of(context).size.height,
+          color: Colors.black.withOpacity(0.4),
           child: Row(
             children: [
               SideBar(onMenuItemSelected: (index) {
                 onMenuItemSelected(index);
-                Future.delayed(const Duration(milliseconds: 250), () {
+                Future.delayed(const Duration(milliseconds: 300), () {
                   Navigator.pop(context);
                 });
               }),
@@ -291,7 +288,7 @@ void showSideBar(BuildContext context, Function(int) onMenuItemSelected) {
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.transparent,
                   ),
                 ),
               ),
