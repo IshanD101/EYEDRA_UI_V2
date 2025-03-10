@@ -4,12 +4,17 @@ import '../models/group.dart';
 import '../models/group_member.dart';
 import '../widgets/group_details_dialog.dart';
 import '../widgets/add_member_dialog.dart';
+import '../widgets/admin_control_panel.dart';
 
 class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onBackPressed;
   final Group group;
   final Function(GroupMember) onMemberAdded;
+  final Function(GroupMember, bool, [String?]) onMemberBanStatusChanged;
+  final Function(String, bool) onMemberAdminStatusChanged;
+  final Function(String) onMemberRemoved;
+  final Function(GroupMember) onMemberUpdated;
 
   const GlassAppBar({
     Key? key,
@@ -17,6 +22,10 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onBackPressed,
     required this.group,
     required this.onMemberAdded,
+    required this.onMemberBanStatusChanged,
+    required this.onMemberAdminStatusChanged,
+    required this.onMemberRemoved,
+    required this.onMemberUpdated,
   }) : super(key: key);
 
   @override
@@ -61,6 +70,15 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () => _showAddMemberDialog(context),
           tooltip: 'Add member',
         ),
+        if (_isCurrentUserAdmin())
+          IconButton(
+            icon: Icon(
+              Icons.admin_panel_settings,
+              color: Colors.white.withOpacity(0.9),
+            ),
+            onPressed: () => _showAdminPanel(context),
+            tooltip: 'Admin Controls',
+          ),
         IconButton(
           icon: Icon(
             Icons.more_vert,
@@ -79,6 +97,29 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: Colors.transparent,
           ),
         ),
+      ),
+    );
+  }
+
+  bool _isCurrentUserAdmin() {
+    // Assuming we have a way to get the current user ID
+    const currentUserId = 'currentUser'; // Replace with actual current user ID
+    final currentMember = group.members.firstWhere(
+          (m) => m.id == currentUserId,
+      orElse: () => GroupMember(id: '', name: ''),
+    );
+    return currentMember.isAdmin;
+  }
+
+  void _showAdminPanel(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AdminControlPanel(
+        group: group,
+        onMemberUpdated: onMemberUpdated,
+        onMemberRemoved: onMemberRemoved,
+        onMemberBanStatusChanged: onMemberBanStatusChanged,
+        onMemberAdminStatusChanged: onMemberAdminStatusChanged,
       ),
     );
   }
