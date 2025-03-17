@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../models/campfire_listener_data.dart';
+import 'session_door.dart'; // Import the new door transition file
 
 class CampfireMain extends StatefulWidget {
   const CampfireMain({super.key});
@@ -159,6 +160,22 @@ class _CampfireState extends State<CampfireMain> {
     );
   }
 
+  void _navigateToSessionDoor(BuildContext context, Session session) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            SessionDoor(session: session),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 500),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -222,193 +239,196 @@ class _CampfireState extends State<CampfireMain> {
                       delegate: SliverChildBuilderDelegate(
                             (context, index) {
                           final session = sessions[index];
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.2),
-                                    width: 1.5,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.blue.withOpacity(0.1),
-                                      blurRadius: 20,
-                                      spreadRadius: 5,
+                          return GestureDetector(
+                            onTap: () => _navigateToSessionDoor(context, session),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.2),
+                                      width: 1.5,
                                     ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius: BorderRadius.circular(12),
-                                              child: BackdropFilter(
-                                                filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                                                child: Container(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 4,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: session.isLive
-                                                        ? Colors.red.withOpacity(0.3)
-                                                        : Colors.grey.withOpacity(0.3),
-                                                    borderRadius: BorderRadius.circular(12),
-                                                    border: Border.all(
-                                                      color: session.isLive
-                                                          ? Colors.red.withOpacity(0.5)
-                                                          : Colors.grey.withOpacity(0.5),
-                                                      width: 1,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.blue.withOpacity(0.1),
+                                        blurRadius: 20,
+                                        spreadRadius: 5,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius: BorderRadius.circular(12),
+                                                child: BackdropFilter(
+                                                  filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                                                  child: Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4,
                                                     ),
-                                                  ),
-                                                  child: Text(
-                                                    session.isLive ? 'LIVE' : 'UPCOMING',
-                                                    style: TextStyle(
+                                                    decoration: BoxDecoration(
                                                       color: session.isLive
-                                                          ? Colors.white
-                                                          : Colors.white.withOpacity(0.7),
-                                                      fontSize: 12,
-                                                      fontWeight: FontWeight.bold,
+                                                          ? Colors.red.withOpacity(0.3)
+                                                          : Colors.grey.withOpacity(0.3),
+                                                      borderRadius: BorderRadius.circular(12),
+                                                      border: Border.all(
+                                                        color: session.isLive
+                                                            ? Colors.red.withOpacity(0.5)
+                                                            : Colors.grey.withOpacity(0.5),
+                                                        width: 1,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      session.isLive ? 'LIVE' : 'UPCOMING',
+                                                      style: TextStyle(
+                                                        color: session.isLive
+                                                            ? Colors.white
+                                                            : Colors.white.withOpacity(0.7),
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            Text(
-                                              session.title,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
+                                              const SizedBox(height: 12),
+                                              Text(
+                                                session.title,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              session.category,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                color: Colors.blue[100],
-                                                fontSize: 14,
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                session.category,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  color: Colors.blue[100],
+                                                  fontSize: 14,
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              session.startTime,
-                                              style: const TextStyle(
-                                                color: Colors.white70,
-                                                fontSize: 14,
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                session.startTime,
+                                                style: const TextStyle(
+                                                  color: Colors.white70,
+                                                  fontSize: 14,
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    InkWell(
-                                      onTap: () => _showHostDetails(context, session.host),
-                                      child: ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                          bottomLeft: Radius.circular(20),
-                                          bottomRight: Radius.circular(20),
-                                        ),
-                                        child: BackdropFilter(
-                                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                          child: Container(
-                                            height: 72,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 12,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.blue.withOpacity(0.2),
-                                              borderRadius: const BorderRadius.only(
-                                                bottomLeft: Radius.circular(20),
-                                                bottomRight: Radius.circular(20),
+                                      InkWell(
+                                        onTap: () => _showHostDetails(context, session.host),
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                            bottomLeft: Radius.circular(20),
+                                            bottomRight: Radius.circular(20),
+                                          ),
+                                          child: BackdropFilter(
+                                            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                            child: Container(
+                                              height: 72,
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 12,
                                               ),
-                                              border: Border(
-                                                top: BorderSide(
-                                                  color: Colors.white.withOpacity(0.1),
-                                                  width: 1,
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue.withOpacity(0.2),
+                                                borderRadius: const BorderRadius.only(
+                                                  bottomLeft: Radius.circular(20),
+                                                  bottomRight: Radius.circular(20),
                                                 ),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                CircleAvatar(
-                                                  radius: 20,
-                                                  backgroundImage: NetworkImage(session.host.imageUrl),
-                                                  backgroundColor: Colors.white.withOpacity(0.2),
-                                                  child: session.host.imageUrl.isEmpty
-                                                      ? const Icon(
-                                                    Icons.person,
-                                                    size: 24,
-                                                    color: Colors.white,
-                                                  )
-                                                      : null,
-                                                ),
-                                                const SizedBox(width: 12),
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      Text(
-                                                        session.host.name,
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: const TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w500,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        session.host.role,
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: const TextStyle(
-                                                          color: Colors.white70,
-                                                          fontSize: 12,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                border: Border(
+                                                  top: BorderSide(
+                                                    color: Colors.white.withOpacity(0.1),
+                                                    width: 1,
                                                   ),
                                                 ),
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.white.withOpacity(0.1),
-                                                    border: Border.all(
-                                                      color: Colors.white.withOpacity(0.2),
-                                                      width: 1,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 20,
+                                                    backgroundImage: NetworkImage(session.host.imageUrl),
+                                                    backgroundColor: Colors.white.withOpacity(0.2),
+                                                    child: session.host.imageUrl.isEmpty
+                                                        ? const Icon(
+                                                      Icons.person,
+                                                      size: 24,
+                                                      color: Colors.white,
+                                                    )
+                                                        : null,
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                          session.host.name,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          session.host.role,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: const TextStyle(
+                                                            color: Colors.white70,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                  child: const Icon(
-                                                    Icons.info_outline,
-                                                    color: Colors.white,
-                                                    size: 16,
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: Colors.white.withOpacity(0.1),
+                                                      border: Border.all(
+                                                        color: Colors.white.withOpacity(0.2),
+                                                        width: 1,
+                                                      ),
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.info_outline,
+                                                      color: Colors.white,
+                                                      size: 16,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
