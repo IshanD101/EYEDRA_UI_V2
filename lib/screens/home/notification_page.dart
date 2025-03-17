@@ -49,7 +49,7 @@ class _NotificationPageState extends State<NotificationPage>
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900]?.withOpacity(0.7),
+        backgroundColor: Colors.grey[900]?.withOpacity(0.8),
         elevation: 0,
         automaticallyImplyLeading: false,
         flexibleSpace: ClipRect(
@@ -77,68 +77,24 @@ class _NotificationPageState extends State<NotificationPage>
                           ],
                         ),
                       ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.2),
-                                width: 1,
+                      DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _selectedFilter,
+                          icon: Icon(Icons.filter_alt_outlined, color: Colors.blue[400]),
+                          dropdownColor: Colors.grey[900]?.withOpacity(0.9),
+                          style: const TextStyle(color: Colors.white),
+                          onChanged: _onFilterChanged,
+                          items: ['All', 'Today', 'Yesterday', 'Last 7 Days']
+                              .map(
+                                (filter) => DropdownMenuItem(
+                              value: filter,
+                              child: Text(
+                                filter,
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                               ),
                             ),
-                            child: DropdownButton<String>(
-                              value: _selectedFilter,
-                              icon: Icon(Icons.filter_alt_outlined, color: Colors.blue[400]),
-                              underline: Container(),
-                              dropdownColor: Colors.grey[900]?.withOpacity(0.9),
-                              style: TextStyle(color: Colors.white.withOpacity(0.9)),
-                              onChanged: _onFilterChanged,
-                              items: [
-                                DropdownMenuItem(
-                                  value: 'All',
-                                  child: Text(
-                                    'All',
-                                    style: TextStyle(
-                                      color: Colors.white, // Set white text
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Today',
-                                  child: Text(
-                                    'Today',
-                                    style: TextStyle(
-                                      color: Colors.white, // Set white text
-                                    ),
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Yesterday',
-                                  child: Text(
-                                    'Yesterday',
-                                    style: TextStyle(
-                                      color: Colors.white, // Set white text
-                                    ),
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Last 7 Days',
-                                  child: Text(
-                                    'Last 7 Days',
-                                    style: TextStyle(
-                                      color: Colors.white, // Set white text
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          )
+                              .toList(),
                         ),
                       ),
                     ],
@@ -151,7 +107,6 @@ class _NotificationPageState extends State<NotificationPage>
       ),
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -164,11 +119,9 @@ class _NotificationPageState extends State<NotificationPage>
               ),
             ),
           ),
-
-          // Content
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
+              padding: const EdgeInsets.all(16.0),
               child: ListView.builder(
                 itemCount: _filteredNotifications.length,
                 itemBuilder: (_, index) {
@@ -179,8 +132,9 @@ class _NotificationPageState extends State<NotificationPage>
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
                         child: Container(
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
+                            color: Colors.white.withOpacity(0.07),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: Colors.white.withOpacity(0.1),
@@ -195,17 +149,24 @@ class _NotificationPageState extends State<NotificationPage>
                             ],
                           ),
                           child: ListTile(
+                            leading: Icon(
+                              Icons.notifications,
+                              color: Colors.blue[300],
+                              size: 30,
+                            ),
                             title: Text(
                               _filteredNotifications[index].title,
-                              style: TextStyle(
-                                color: Colors.white, // <-- Ensure white text
+                              style: const TextStyle(
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
                             subtitle: Text(
                               _filteredNotifications[index].timestamp.toString(),
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.7), // Subtitle text
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 13,
                               ),
                             ),
                           ),
