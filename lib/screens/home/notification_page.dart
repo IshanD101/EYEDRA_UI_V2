@@ -64,7 +64,7 @@ class _NotificationPageState extends State<NotificationPage>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Hello, User!',
+                        'Hello, User! 👋',
                         style: textTheme.titleLarge?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -77,24 +77,35 @@ class _NotificationPageState extends State<NotificationPage>
                           ],
                         ),
                       ),
-                      DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _selectedFilter,
-                          icon: Icon(Icons.filter_alt_outlined, color: Colors.blue[400]),
-                          dropdownColor: Colors.grey[900]?.withOpacity(0.9),
-                          style: const TextStyle(color: Colors.white),
-                          onChanged: _onFilterChanged,
-                          items: ['All', 'Today', 'Yesterday', 'Last 7 Days']
-                              .map(
-                                (filter) => DropdownMenuItem(
-                              value: filter,
-                              child: Text(
-                                filter,
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedFilter,
+                            icon: Icon(Icons.filter_alt_outlined, color: Colors.blue[400]),
+                            dropdownColor: Colors.grey[900]?.withOpacity(0.9),
+                            style: const TextStyle(color: Colors.white),
+                            onChanged: _onFilterChanged,
+                            items: ['All', 'Today', 'Yesterday', 'Last 7 Days']
+                                .map(
+                                  (filter) => DropdownMenuItem(
+                                value: filter,
+                                child: Text(
+                                  filter,
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
                               ),
-                            ),
-                          )
-                              .toList(),
+                            )
+                                .toList(),
+                          ),
                         ),
                       ),
                     ],
@@ -113,7 +124,7 @@ class _NotificationPageState extends State<NotificationPage>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Colors.blue[900]!.withOpacity(0.3),
+                  Colors.blue[900]!.withOpacity(0.4),
                   Colors.black,
                 ],
               ),
@@ -130,11 +141,11 @@ class _NotificationPageState extends State<NotificationPage>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                         child: Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.07),
+                            color: Colors.white.withOpacity(0.08),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: Colors.white.withOpacity(0.1),
@@ -142,17 +153,19 @@ class _NotificationPageState extends State<NotificationPage>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.blue.withOpacity(0.1),
-                                blurRadius: 10,
-                                spreadRadius: 2,
+                                color: Colors.blue.withOpacity(0.15),
+                                blurRadius: 12,
+                                spreadRadius: 3,
                               ),
                             ],
                           ),
                           child: ListTile(
-                            leading: Icon(
-                              Icons.notifications,
-                              color: Colors.blue[300],
-                              size: 30,
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.blue.withOpacity(0.3),
+                              child: Icon(
+                                Icons.notifications,
+                                color: Colors.blue[300],
+                              ),
                             ),
                             title: Text(
                               _filteredNotifications[index].title,
