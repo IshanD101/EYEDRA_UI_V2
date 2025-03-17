@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:eyedra_ui_v2/widgets/notification_tile.dart';
 import 'package:eyedra_ui_v2/utils/notification_util.dart';
 import 'package:eyedra_ui_v2/models/user_notifications.dart';
@@ -42,182 +41,85 @@ class _NotificationPageState extends State<NotificationPage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900]?.withOpacity(0.7),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              color: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: SafeArea(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Hello, User!',
-                        style: textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          shadows: [
-                            Shadow(
-                              color: Colors.blue.withOpacity(0.6),
-                              blurRadius: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.2),
-                                width: 1,
-                              ),
-                            ),
-                            child: DropdownButton<String>(
-                              value: _selectedFilter,
-                              icon: Icon(Icons.filter_alt_outlined, color: Colors.blue[400]),
-                              underline: Container(),
-                              dropdownColor: Colors.grey[900]?.withOpacity(0.9),
-                              style: TextStyle(color: Colors.white.withOpacity(0.9)),
-                              onChanged: _onFilterChanged,
-                              items: [
-                                DropdownMenuItem(
-                                  value: 'All',
-                                  child: Text(
-                                    'All',
-                                    style: TextStyle(
-                                      color: Colors.white, // Set white text
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Today',
-                                  child: Text(
-                                    'Today',
-                                    style: TextStyle(
-                                      color: Colors.white, // Set white text
-                                    ),
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Yesterday',
-                                  child: Text(
-                                    'Yesterday',
-                                    style: TextStyle(
-                                      color: Colors.white, // Set white text
-                                    ),
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Last 7 Days',
-                                  child: Text(
-                                    'Last 7 Days',
-                                    style: TextStyle(
-                                      color: Colors.white, // Set white text
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF0D47A1), // Dark Blue
+                Color(0xFF1976D2), // Medium Blue
+              ],
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: SafeArea(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Hello, User!',
+                    style: textTheme.titleLarge?.copyWith(color: Colors.white),
                   ),
-                ),
+                  DropdownButton<String>(
+                    value: _selectedFilter,
+                    icon: const Icon(Icons.filter_alt_outlined, color: Colors.white),
+                    items: const [
+                      DropdownMenuItem(value: 'All', child: Text('All')),
+                      DropdownMenuItem(value: 'Today', child: Text('Today')),
+                      DropdownMenuItem(value: 'Yesterday', child: Text('Yesterday')),
+                      DropdownMenuItem(value: 'Last 7 Days', child: Text('Last 7 Days')),
+                    ],
+                    onChanged: _onFilterChanged,
+                    dropdownColor: Colors.white.withOpacity(0.9),
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          // Background gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.blue[900]!.withOpacity(0.3),
-                  Colors.black,
-                ],
-              ),
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0.0, -0.6), // Center near the top
+            radius: 1.5,
+            colors: [
+              Color(0xFFBBDEFB), // Light Blue
+              Color(0xFF2196F3), // Primary Blue
+              Color(0xFF0D47A1), // Dark Blue
+            ],
+            stops: [0.2, 0.5, 1.0],
           ),
-
-          // Content
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
-              child: ListView.builder(
-                itemCount: _filteredNotifications.length,
-                itemBuilder: (_, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.1),
-                              width: 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.blue.withOpacity(0.1),
-                                blurRadius: 10,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              _filteredNotifications[index].title,
-                              style: TextStyle(
-                                color: Colors.white, // <-- Ensure white text
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              _filteredNotifications[index].timestamp.toString(),
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.7), // Subtitle text
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 100.0, 16.0, 16.0),
+          child: ListView.builder(
+            itemCount: _filteredNotifications.length,
+            itemBuilder: (_, index) {
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                elevation: 6,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: NotificationTile(
+                  notification: _filteredNotifications[index],
+                ),
+              );
+            },
           ),
-        ],
+        ),
       ),
     );
   }
