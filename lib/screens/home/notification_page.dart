@@ -52,11 +52,11 @@ class _NotificationPageState extends State<NotificationPage>
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
               colors: [
-                Color(0xFF0D47A1), // Dark Blue
-                Color(0xFF1976D2), // Medium Blue
+                Color(0xFF8E2DE2), // Purple
+                Color(0xFF4A00E0), // Dark Blue
               ],
             ),
           ),
@@ -68,7 +68,16 @@ class _NotificationPageState extends State<NotificationPage>
                 children: [
                   Text(
                     'Hello, User!',
-                    style: textTheme.titleLarge?.copyWith(color: Colors.white),
+                    style: textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 5,
+                        ),
+                      ],
+                    ),
                   ),
                   DropdownButton<String>(
                     value: _selectedFilter,
@@ -92,14 +101,15 @@ class _NotificationPageState extends State<NotificationPage>
       body: Container(
         decoration: const BoxDecoration(
           gradient: RadialGradient(
-            center: Alignment(0.0, -0.6), // Center near the top
-            radius: 1.5,
+            center: Alignment(0.0, -0.6),
+            radius: 1.8,
             colors: [
-              Color(0xFFBBDEFB), // Light Blue
-              Color(0xFF2196F3), // Primary Blue
-              Color(0xFF0D47A1), // Dark Blue
+              Color(0xFFFFA69E), // Light Pink
+              Color(0xFFFF6F61), // Coral
+              Color(0xFF8E2DE2), // Purple
+              Color(0xFF4A00E0), // Dark Blue
             ],
-            stops: [0.2, 0.5, 1.0],
+            stops: [0.1, 0.4, 0.7, 1.0],
           ),
         ),
         child: Padding(
@@ -109,10 +119,12 @@ class _NotificationPageState extends State<NotificationPage>
             itemBuilder: (_, index) {
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
-                elevation: 6,
+                elevation: 8,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(15),
                 ),
+                color: Colors.white.withOpacity(0.9),
+                shadowColor: Colors.black.withOpacity(0.2),
                 child: NotificationTile(
                   notification: _filteredNotifications[index],
                 ),
