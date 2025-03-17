@@ -13,59 +13,107 @@ class CustomBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(20),
-        topRight: Radius.circular(20),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(25),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: BottomNavigationBar(
-            currentIndex: currentIndex,
-            onTap: onTap,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined, size: 28),
-                label: "Home",
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1.5,
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.people_outline, size: 28),
-                label: "People",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.video_camera_back_outlined, size: 28),
-                label: "Videos",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.perm_media_outlined, size: 28),
-                label: "Media",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.notifications_outlined, size: 28),
-                label: "Notifications",
-              ),
-            ],
-            backgroundColor: Colors.transparent,
-            selectedItemColor: Colors.purple,
-            unselectedItemColor: Colors.blue[800],
-            type: BottomNavigationBarType.fixed,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            elevation: 0,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.1),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
+              ],
+            ),
+            child: BottomNavigationBar(
+              currentIndex: currentIndex,
+              onTap: onTap,
+              items: _buildNavItems(),
+              backgroundColor: Colors.transparent,
+              selectedItemColor: Colors.blue[400],
+              unselectedItemColor: Colors.white.withOpacity(0.7),
+              type: BottomNavigationBarType.fixed,
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              elevation: 0,
+            ),
           ),
         ),
       ),
     );
+  }
+
+  List<BottomNavigationBarItem> _buildNavItems() {
+    return [
+      _buildNavItem(Icons.home_outlined, Icons.home, "Home"),
+      _buildNavItem(Icons.people_outline, Icons.people, "People"),
+      _buildNavItem(
+          Icons.video_camera_back_outlined, Icons.video_camera_back, "Videos"),
+      _buildNavItem(Icons.perm_media_outlined, Icons.perm_media, "Media"),
+      _buildNavItem(
+          Icons.notifications_outlined, Icons.notifications, "Notifications"),
+    ];
+  }
+
+  BottomNavigationBarItem _buildNavItem(
+      IconData outlinedIcon, IconData filledIcon, String label) {
+    return BottomNavigationBarItem(
+      icon: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: currentIndex == _getIndexFromLabel(label)
+              ? Colors.blue.withOpacity(0.3)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: currentIndex == _getIndexFromLabel(label)
+              ? Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 1,
+                )
+              : null,
+          boxShadow: currentIndex == _getIndexFromLabel(label)
+              ? [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.3),
+                    blurRadius: 15,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : null,
+        ),
+        child: Icon(
+          currentIndex == _getIndexFromLabel(label) ? filledIcon : outlinedIcon,
+          size: 24,
+        ),
+      ),
+      label: label,
+    );
+  }
+
+  int _getIndexFromLabel(String label) {
+    switch (label) {
+      case "Home":
+        return 0;
+      case "People":
+        return 1;
+      case "Videos":
+        return 2;
+      case "Media":
+        return 3;
+      case "Notifications":
+        return 4;
+      default:
+        return 0;
+    }
   }
 }
