@@ -55,8 +55,10 @@ class _NotificationPageState extends State<NotificationPage>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF8E2DE2), // Purple
-                Color(0xFF4A00E0), // Dark Blue
+                Color(0xFF240046), // Deep Purple
+                Color(0xFF3C096C), // Darker Purple
+                Color(0xFF5A189A), // Bright Purple
+                Color(0xFF9D4EDD), // Light Purple
               ],
             ),
           ),
@@ -71,10 +73,11 @@ class _NotificationPageState extends State<NotificationPage>
                     style: textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
+                      fontSize: 22,
                       shadows: [
                         Shadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 5,
+                          color: Colors.blueAccent.withOpacity(0.6),
+                          blurRadius: 10,
                         ),
                       ],
                     ),
@@ -100,16 +103,15 @@ class _NotificationPageState extends State<NotificationPage>
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0.0, -0.6),
-            radius: 1.8,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFFFA69E), // Light Pink
-              Color(0xFFFF6F61), // Coral
-              Color(0xFF8E2DE2), // Purple
-              Color(0xFF4A00E0), // Dark Blue
+              Color(0xFF240046), // Deep Purple
+              Color(0xFF3C096C), // Darker Purple
+              Color(0xFF5A189A), // Bright Purple
+              Color(0xFF9D4EDD), // Light Purple
             ],
-            stops: [0.1, 0.4, 0.7, 1.0],
           ),
         ),
         child: Padding(
@@ -117,14 +119,21 @@ class _NotificationPageState extends State<NotificationPage>
           child: ListView.builder(
             itemCount: _filteredNotifications.length,
             itemBuilder: (_, index) {
-              return Card(
+              return Container(
                 margin: const EdgeInsets.only(bottom: 16),
-                elevation: 8,
-                shape: RoundedRectangleBorder(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
+                  color: Colors.white.withOpacity(0.15), // Glass effect
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                  border: Border.all(color: Colors.white.withOpacity(0.2)),
                 ),
-                color: Colors.white.withOpacity(0.9),
-                shadowColor: Colors.black.withOpacity(0.2),
                 child: NotificationTile(
                   notification: _filteredNotifications[index],
                 ),
@@ -139,3 +148,4 @@ class _NotificationPageState extends State<NotificationPage>
   @override
   bool get wantKeepAlive => true;
 }
+
