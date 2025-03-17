@@ -41,6 +41,7 @@ class _NotificationPageState extends State<NotificationPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Call to super.build(context)
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
