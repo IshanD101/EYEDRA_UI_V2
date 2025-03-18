@@ -13,7 +13,7 @@ class NotificationPage extends StatefulWidget {
 //Notification Page using StatefulWidget
 class _NotificationPageState extends State<NotificationPage>
     with AutomaticKeepAliveClientMixin {
-  late List<UserNotification> _notifications;
+  late List<UserNotification> _notifications; //stores all notifications
   late List<UserNotification> _filteredNotifications;
   String _selectedFilter = 'All';
 
