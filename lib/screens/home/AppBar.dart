@@ -3,7 +3,8 @@ import 'dart:ui';
 import 'package:eyedra_ui_v2/screens/EyedraBot/chatbot.dart';
 
 class CustomAppBar {
-  static PreferredSizeWidget buildGlassmorphicAppBar(BuildContext context,
+  static PreferredSizeWidget buildGlassmorphicAppBar(
+      BuildContext context,
       GlobalKey<ScaffoldState> scaffoldKey,
       String title,
       VoidCallback onProfileTap) {
@@ -96,7 +97,8 @@ class CustomAppBar {
             Text(
               text[i],
               style: TextStyle(
-                color: i < colors.length ? colors[i] : colors[i % colors.length],
+                color:
+                    i < colors.length ? colors[i] : colors[i % colors.length],
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,

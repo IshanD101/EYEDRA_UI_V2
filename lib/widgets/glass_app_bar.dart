@@ -33,79 +33,98 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: GestureDetector(
-        onTap: () => _showGroupDetails(context),
-        child: Row(
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[900],
-              ),
+    // Get screen width for responsive design
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: AppBar(
+          title: GestureDetector(
+            onTap: () => _showGroupDetails(context),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Use Flexible to handle text overflow
+                Flexible(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 18 : 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.info_outline,
+                  size: isSmallScreen ? 14 : 16,
+                  color: Colors.white.withOpacity(0.7),
+                ),
+              ],
             ),
-            const SizedBox(width: 4),
-            Icon(
-              Icons.info_outline,
-              size: 16,
-              color: Colors.white.withOpacity(0.7),
-            ),
-          ],
-        ),
-      ),
-      backgroundColor: Colors.grey[900]?.withOpacity(0.7),
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: onBackPressed,
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.person_add,
-            color: Colors.white.withOpacity(0.9),
           ),
-          onPressed: () => _showAddMemberDialog(context),
-          tooltip: 'Add member',
-        ),
-        if (_isCurrentUserAdmin())
-          IconButton(
-            icon: Icon(
-              Icons.admin_panel_settings,
-              color: Colors.white.withOpacity(0.9),
-            ),
-            onPressed: () => _showAdminPanel(context),
-            tooltip: 'Admin Controls',
+          backgroundColor: Colors.grey[900]?.withOpacity(0.7),
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: onBackPressed,
+            tooltip: 'Back',
           ),
-        IconButton(
-          icon: Icon(
-            Icons.more_vert,
-            color: Colors.white.withOpacity(0.9),
-          ),
-          onPressed: () {
-            // Show more options menu
-            _showMoreOptions(context);
-          },
-        ),
-      ],
-      flexibleSpace: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: Colors.transparent,
-          ),
+          actions: _buildActions(context, isSmallScreen),
+          titleSpacing: 0, // Reduce spacing to accommodate more items
+          // Remove the flexibleSpace to fix rendering issues
         ),
       ),
     );
+  }
+
+  List<Widget> _buildActions(BuildContext context, bool isSmallScreen) {
+    return [
+      IconButton(
+        icon: Icon(
+          Icons.person_add,
+          color: Colors.white.withOpacity(0.9),
+          size: isSmallScreen ? 20 : 24,
+        ),
+        onPressed: () => _showAddMemberDialog(context),
+        tooltip: 'Add member',
+      ),
+      if (_isCurrentUserAdmin())
+        IconButton(
+          icon: Icon(
+            Icons.admin_panel_settings,
+            color: Colors.white.withOpacity(0.9),
+            size: isSmallScreen ? 20 : 24,
+          ),
+          onPressed: () => _showAdminPanel(context),
+          tooltip: 'Admin Controls',
+          // Use visualDensity to adjust icon spacing on small screens
+          visualDensity:
+              isSmallScreen ? VisualDensity.compact : VisualDensity.standard,
+        ),
+      IconButton(
+        icon: Icon(
+          Icons.more_vert,
+          color: Colors.white.withOpacity(0.9),
+          size: isSmallScreen ? 20 : 24,
+        ),
+        onPressed: () => _showMoreOptions(context),
+        tooltip: 'More options',
+        visualDensity:
+            isSmallScreen ? VisualDensity.compact : VisualDensity.standard,
+      ),
+    ];
   }
 
   bool _isCurrentUserAdmin() {
     // Assuming we have a way to get the current user ID
     const currentUserId = 'currentUser'; // Replace with actual current user ID
     final currentMember = group.members.firstWhere(
-          (m) => m.id == currentUserId,
+      (m) => m.id == currentUserId,
       orElse: () => GroupMember(id: '', name: ''),
     );
     return currentMember.isAdmin;
@@ -142,12 +161,19 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   void _showMoreOptions(BuildContext context) {
+    // Get screen height for responsive bottom sheet
+    final screenHeight = MediaQuery.of(context).size.height;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true, // Allow scrolling if needed
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Container(
+          constraints: BoxConstraints(
+            maxHeight: screenHeight * 0.7, // Limit height to 70% of screen
+          ),
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
             color: Colors.grey[900]?.withOpacity(0.9),
@@ -163,23 +189,33 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Add a drag handle for better UX
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
               _buildOptionTile(
                 context,
                 Icons.edit,
                 'Edit group info',
-                    () => Navigator.pop(context),
+                () => Navigator.pop(context),
               ),
               _buildOptionTile(
                 context,
                 Icons.notifications,
                 'Mute notifications',
-                    () => Navigator.pop(context),
+                () => Navigator.pop(context),
               ),
               _buildOptionTile(
                 context,
                 Icons.exit_to_app,
                 'Leave group',
-                    () => Navigator.pop(context),
+                () => Navigator.pop(context),
                 isDestructive: true,
               ),
             ],
@@ -189,7 +225,9 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _buildOptionTile(BuildContext context, IconData icon, String label, VoidCallback onTap, {bool isDestructive = false}) {
+  Widget _buildOptionTile(
+      BuildContext context, IconData icon, String label, VoidCallback onTap,
+      {bool isDestructive = false}) {
     return ListTile(
       leading: Icon(
         icon,
@@ -198,7 +236,8 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         label,
         style: TextStyle(
-          color: isDestructive ? Colors.red[300] : Colors.white.withOpacity(0.9),
+          color:
+              isDestructive ? Colors.red[300] : Colors.white.withOpacity(0.9),
         ),
       ),
       onTap: onTap,
