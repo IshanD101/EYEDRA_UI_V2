@@ -2,6 +2,7 @@ import 'package:eyedra_ui_v2/widgets/notification_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:eyedra_ui_v2/utils/notification_util.dart';
 import 'package:eyedra_ui_v2/models/user_notifications.dart';
+import 'dart:ui';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -58,20 +59,36 @@ class _NotificationPageState extends State<NotificationPage>
                   style: textTheme.titleLarge?.copyWith(color: Colors.black),
                 ),
                 // Date Filter Dropdown
-                DropdownButton<String>(
-                  value: _selectedFilter,
-                  icon: Icon(Icons.filter_alt_outlined, color: Colors.black),
-                  items: const [
-                    DropdownMenuItem(value: 'All', child: Text('All')),
-                    DropdownMenuItem(value: 'Today', child: Text('Today')),
-                    DropdownMenuItem(
-                        value: 'Yesterday', child: Text('Yesterday')),
-                    DropdownMenuItem(
-                        value: 'Last 7 Days', child: Text('Last 7 Days')),
-                  ],
-                  onChanged: _onFilterChanged,
-                  dropdownColor: const Color.fromARGB(255, 248, 247, 247),
-                  style: TextStyle(color: Colors.black),
+                Container(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: DropdownButton<String>(
+                    value: _selectedFilter,
+                    icon: Icon(Icons.filter_alt_outlined, color: Colors.black),
+                    items: const [
+                      DropdownMenuItem(value: 'All', child: Text('All')),
+                      DropdownMenuItem(value: 'Today', child: Text('Today')),
+                      DropdownMenuItem(
+                          value: 'Yesterday', child: Text('Yesterday')),
+                      DropdownMenuItem(
+                          value: 'Last 7 Days', child: Text('Last 7 Days')),
+                    ],
+                    onChanged: _onFilterChanged,
+                    dropdownColor: Colors.white,
+                    style: TextStyle(color: Colors.black),
+                    underline: SizedBox(),
+                  ),
                 ),
               ],
             ),
@@ -83,14 +100,32 @@ class _NotificationPageState extends State<NotificationPage>
         child: ListView.builder(
           itemCount: _filteredNotifications.length,
           itemBuilder: (_, index) {
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16),
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: NotificationTile(
-                notification: _filteredNotifications[index],
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4), // Darker background
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.15), // Subtle border
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.15),
+                        blurRadius: 25,
+                        spreadRadius: 3,
+                      ),
+                    ],
+                  ),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(12), // Added padding
+                  child: NotificationTile(
+                    notification: _filteredNotifications[index],
+                  ),
+                ),
               ),
             );
           },
