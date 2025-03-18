@@ -63,6 +63,7 @@ class _NotificationPageState extends State<NotificationPage>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      // Greeting Text
                       Text(
                         'Hello, User! 👋',
                         style: textTheme.titleLarge?.copyWith(
