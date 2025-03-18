@@ -15,7 +15,7 @@ class _NotificationPageState extends State<NotificationPage>
     with AutomaticKeepAliveClientMixin {
   late List<UserNotification> _notifications; //stores all notifications
   late List<UserNotification> _filteredNotifications;//stores filtered notifications
-  String _selectedFilter = 'All';
+  String _selectedFilter = 'All'; // default filter
 
   @override
   void initState() {
