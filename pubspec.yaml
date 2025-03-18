@@ -39,6 +39,7 @@ dependencies:
   image_picker: ^1.0.7
   google_fonts: ^6.1.0
   glassmorphism: ^3.0.0
+  carousel_slider: ^5.0.0
 
   # State management and utilities
   provider: ^6.1.2
