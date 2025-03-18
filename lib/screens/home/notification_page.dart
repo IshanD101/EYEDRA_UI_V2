@@ -47,7 +47,7 @@ class _NotificationPageState extends State<NotificationPage>
 
     return Scaffold(
       backgroundColor: Colors.black,// dark theme backgroud
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true, // allows app bar to blend with backgroud
       appBar: AppBar(
         backgroundColor: Colors.grey[900]?.withOpacity(0.8),
         elevation: 0,
