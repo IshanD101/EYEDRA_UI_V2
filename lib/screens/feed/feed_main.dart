@@ -387,7 +387,7 @@ class PostDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
 
-                            // Interaction buttons
+                            // Interaction buttons - removed comment button
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -397,94 +397,11 @@ class PostDetailScreen extends StatelessWidget {
                                   color: Colors.red.withOpacity(0.8),
                                 ),
                                 _buildInteractionButton(
-                                  icon: Icons.comment_outlined,
-                                  label: "${post.comments} Comments",
-                                  color: Colors.blue.withOpacity(0.8),
-                                ),
-                                _buildInteractionButton(
                                   icon: Icons.share_outlined,
                                   label: "${post.shares} Shares",
                                   color: Colors.green.withOpacity(0.8),
                                 ),
                               ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Comments section
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                      child: Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Comments",
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            // Comment input field
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.1),
-                                  width: 1,
-                                ),
-                              ),
-                              child: TextField(
-                                style: TextStyle(color: Colors.white.withOpacity(0.9)),
-                                decoration: InputDecoration(
-                                  hintText: "Add a comment...",
-                                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                                  prefixIcon: Icon(Icons.chat_bubble_outline, color: Colors.white.withOpacity(0.5)),
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Sample comments
-                            _buildCommentItem("user123", "This looks amazing!", "2h ago"),
-                            const SizedBox(height: 12),
-                            _buildCommentItem("photo_lover", "Great composition, love the colors!", "5h ago"),
-                            const SizedBox(height: 12),
-
-                            // View more comments button
-                            Center(
-                              child: TextButton(
-                                onPressed: () {},
-                                child: Text(
-                                  "View all ${post.comments} comments",
-                                  style: TextStyle(
-                                    color: Colors.blue[400],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
                             ),
                           ],
                         ),
@@ -536,59 +453,6 @@ class PostDetailScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildCommentItem(String username, String comment, String time) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CircleAvatar(
-          radius: 16,
-          backgroundColor: Colors.white.withOpacity(0.1),
-          child: const Icon(
-            Icons.person,
-            size: 18,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    username,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    time,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withOpacity(0.5),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                comment,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
