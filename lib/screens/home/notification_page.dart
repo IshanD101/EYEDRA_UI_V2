@@ -56,7 +56,7 @@ class _NotificationPageState extends State<NotificationPage>
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
-              color: Colors.transparent,
+              color: Colors.transparent,// maintain glassmorphism effect
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: SafeArea(
