@@ -46,7 +46,7 @@ class _NotificationPageState extends State<NotificationPage>
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black,// dark theme backgroud
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.grey[900]?.withOpacity(0.8),
