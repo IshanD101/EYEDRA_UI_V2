@@ -23,7 +23,7 @@ class _NotificationPageState extends State<NotificationPage>
     _notifications = UserNotification.dummyNotifications;
     _filteredNotifications = _notifications;
   }
-
+//Filters notifications based on the selected category
   void _applyFilter() {
     setState(() {
       _filteredNotifications = NotificationUtils.filterNotifications(
