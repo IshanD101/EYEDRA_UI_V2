@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../models/campfire_listener_data.dart';
-import 'session_door.dart'; // Import the new door transition file
 
 class CampfireMain extends StatefulWidget {
   const CampfireMain({super.key});
@@ -160,11 +159,11 @@ class _CampfireState extends State<CampfireMain> {
     );
   }
 
-  void _navigateToSessionDoor(BuildContext context, Session session) {
+  void _navigateToSessionRoom(BuildContext context, Session session) {
     Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            SessionDoor(session: session),
+            SessionRoom(session: session),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
             opacity: animation,
@@ -240,7 +239,7 @@ class _CampfireState extends State<CampfireMain> {
                             (context, index) {
                           final session = sessions[index];
                           return GestureDetector(
-                            onTap: () => _navigateToSessionDoor(context, session),
+                            onTap: () => _navigateToSessionRoom(context, session),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: BackdropFilter(
@@ -443,6 +442,49 @@ class _CampfireState extends State<CampfireMain> {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+// SessionRoom class from the original session_door.dart file
+class SessionRoom extends StatelessWidget {
+  final Session session;
+
+  const SessionRoom({super.key, required this.session});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: Text(session.title),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      extendBodyBehindAppBar: true,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.blue[900]!.withOpacity(0.4),
+              Colors.black,
+            ],
+          ),
+        ),
+        child: Center(
+          child: Text(
+            'You are now connected to ${session.title}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }
