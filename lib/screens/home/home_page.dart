@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
         context,
         _scaffoldKey,
         titles[_currentIndex],
-            () {
+        () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => ProfilePage()),
@@ -74,8 +74,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             // Status bar that only appears on the feed page (index 0)
-            if (_currentIndex == 0)
-              const StatusBar(),
+            if (_currentIndex == 0) const StatusBar(),
             // Expanded to make the page fill the remaining space
             Expanded(
               child: pages[_currentIndex], // Displays the selected page
