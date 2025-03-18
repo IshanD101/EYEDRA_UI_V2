@@ -7,6 +7,7 @@ import 'package:eyedra_ui_v2/screens/navigation.dart';
 import 'package:eyedra_ui_v2/screens/profile/profile_page.dart';
 import 'package:eyedra_ui_v2/screens/virtual_campfire/campfire_main.dart';
 import 'package:eyedra_ui_v2/widgets/feed_list.dart';
+import 'package:eyedra_ui_v2/widgets/status_bar.dart'; // Import the new StatusBar widget
 import 'AppBar.dart'; // Import the custom AppBar
 
 void main() {
@@ -70,7 +71,17 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: SafeArea(
-        child: pages[_currentIndex], // Displays the selected page
+        child: Column(
+          children: [
+            // Status bar that only appears on the feed page (index 0)
+            if (_currentIndex == 0)
+              const StatusBar(),
+            // Expanded to make the page fill the remaining space
+            Expanded(
+              child: pages[_currentIndex], // Displays the selected page
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: CustomBottomNav(
         currentIndex: _currentIndex,
