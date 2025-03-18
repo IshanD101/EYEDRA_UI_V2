@@ -30,7 +30,7 @@ class _NotificationPageState extends State<NotificationPage>
           _notifications, _selectedFilter);
     });
   }
-
+// Handles filter dropdown selection change
   void _onFilterChanged(String? newFilter) {
     if (newFilter != null) {
       setState(() {
