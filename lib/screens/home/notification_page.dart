@@ -78,6 +78,7 @@ class _NotificationPageState extends State<NotificationPage>
                           ],
                         ),
                       ),
+                      //filter dropdown
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
