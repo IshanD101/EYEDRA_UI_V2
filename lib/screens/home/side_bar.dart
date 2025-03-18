@@ -13,40 +13,65 @@ class SideBar extends StatelessWidget {
         topRight: Radius.circular(20),
         bottomRight: Radius.circular(20),
       ),
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.6,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-        ),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: Colors.purple,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              child: const Text(
-                'EYEDRA Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15), // Updated blur effect
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.6,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.black.withOpacity(0.6),
+                Colors.black.withOpacity(0.4)
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            _buildMenuItem(Icons.info, 'About', 0, context),
-            _buildMenuItem(Icons.lock, 'Privacy Policy', 1, context),
-            _buildMenuItem(Icons.fireplace, 'Campfire', 2, context),
-            _buildMenuItem(Icons.headset_mic, 'Listener', 3, context),
-          ],
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.15), // Subtle border
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withOpacity(0.3),
+                blurRadius: 30,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.purple, Colors.deepPurple],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  'EYEDRA Menu',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              _buildMenuItem(Icons.info, 'About', 0, context),
+              _buildMenuItem(Icons.lock, 'Privacy Policy', 1, context),
+              _buildMenuItem(Icons.fireplace, 'Campfire', 2, context),
+              _buildMenuItem(Icons.headset_mic, 'Listener', 3, context),
+            ],
+          ),
         ),
       ),
     );
@@ -55,11 +80,12 @@ class SideBar extends StatelessWidget {
   Widget _buildMenuItem(
       IconData icon, String title, int index, BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue.shade900),
+      leading:
+          Icon(icon, color: Colors.white.withOpacity(0.9)), // Darker icon color
       title: Text(
         title,
         style: TextStyle(
-          color: Colors.blue.shade900,
+          color: Colors.white.withOpacity(0.9), // Darker text color
           fontSize: 18,
           fontWeight: FontWeight.w500,
         ),
@@ -67,6 +93,7 @@ class SideBar extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       onTap: () {
         Navigator.pop(context);
+        onMenuItemSelected(index);
       },
       tileColor: Colors.transparent,
       splashColor: Colors.blueAccent.withOpacity(0.3),

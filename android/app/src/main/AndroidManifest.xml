@@ -3,7 +3,6 @@
     <application
         android:label="eyedra_ui_v2"
         android:icon="@mipmap/ic_launcher">
-
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
             android:value="false" />
