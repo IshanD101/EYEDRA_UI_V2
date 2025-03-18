@@ -18,11 +18,11 @@ class GroupDetailsDialog extends StatelessWidget {
         backgroundColor: Colors.transparent,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.grey[900]?.withOpacity(0.9),
+            color: Colors.grey[900]?.withOpacity(0.3),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
-              width: 1,
+              color: Colors.white.withOpacity(0.2),
+              width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
@@ -60,16 +60,16 @@ class GroupDetailsDialog extends StatelessWidget {
             backgroundColor: Colors.blue[900]?.withOpacity(0.2),
             child: group.groupImageUrl != null
                 ? ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: Image.network(group.groupImageUrl!),
-            )
+                    borderRadius: BorderRadius.circular(40),
+                    child: Image.network(group.groupImageUrl!),
+                  )
                 : Text(
-              group.name.substring(0, 1).toUpperCase(),
-              style: TextStyle(
-                fontSize: 36,
-                color: Colors.white.withOpacity(0.8),
-              ),
-            ),
+                    group.name.substring(0, 1).toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 36,
+                      color: Colors.white.withOpacity(0.8),
+                    ),
+                  ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -120,15 +120,15 @@ class GroupDetailsDialog extends StatelessWidget {
               backgroundColor: Colors.blue[800]?.withOpacity(0.2),
               child: member.avatarUrl != null
                   ? ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(member.avatarUrl!),
-              )
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(member.avatarUrl!),
+                    )
                   : Text(
-                member.name.substring(0, 1).toUpperCase(),
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
-                ),
-              ),
+                      member.name.substring(0, 1).toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
             ),
             title: Text(
               member.name,
@@ -138,26 +138,26 @@ class GroupDetailsDialog extends StatelessWidget {
             ),
             trailing: member.isAdmin
                 ? Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 2,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.blue[900]?.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.blue.withOpacity(0.3),
-                  width: 1,
-                ),
-              ),
-              child: Text(
-                'Admin',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.blue[300],
-                ),
-              ),
-            )
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[900]?.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.blue.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      'Admin',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.blue[300],
+                      ),
+                    ),
+                  )
                 : null,
           );
         },

@@ -18,20 +18,21 @@ class CustomBottomNav extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter:
+              ImageFilter.blur(sigmaX: 15, sigmaY: 15), // Updated blur effect
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.black.withOpacity(0.4), // Darker background
               borderRadius: BorderRadius.circular(25),
               border: Border.all(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withOpacity(0.15), // Subtle border
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.blue.withOpacity(0.1),
-                  blurRadius: 20,
-                  spreadRadius: 5,
+                  color: Colors.blue.withOpacity(0.15),
+                  blurRadius: 25,
+                  spreadRadius: 3,
                 ),
               ],
             ),
@@ -40,8 +41,9 @@ class CustomBottomNav extends StatelessWidget {
               onTap: onTap,
               items: _buildNavItems(),
               backgroundColor: Colors.transparent,
-              selectedItemColor: Colors.blue[400],
-              unselectedItemColor: Colors.white.withOpacity(0.7),
+              selectedItemColor: Colors.blue[300], // Darker selected item color
+              unselectedItemColor:
+                  Colors.white.withOpacity(0.9), // Darker unselected item color
               type: BottomNavigationBarType.fixed,
               showSelectedLabels: false,
               showUnselectedLabels: false,
@@ -77,7 +79,7 @@ class CustomBottomNav extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: currentIndex == _getIndexFromLabel(label)
               ? Border.all(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withOpacity(0.15),
                   width: 1,
                 )
               : null,
@@ -94,6 +96,7 @@ class CustomBottomNav extends StatelessWidget {
         child: Icon(
           currentIndex == _getIndexFromLabel(label) ? filledIcon : outlinedIcon,
           size: 24,
+          color: Colors.white.withOpacity(0.9), // Darker icon color
         ),
       ),
       label: label,

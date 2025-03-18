@@ -61,14 +61,16 @@ class _CampfireState extends State<CampfireMain> {
                   ),
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage: NetworkImage(host.imageUrl),
                     backgroundColor: Colors.white.withOpacity(0.2),
+                    backgroundImage: host.imageUrl.isNotEmpty
+                        ? NetworkImage(host.imageUrl)
+                        : null,
                     child: host.imageUrl.isEmpty
                         ? const Icon(
-                      Icons.person,
-                      size: 60,
-                      color: Colors.white,
-                    )
+                            Icons.person,
+                            size: 60,
+                            color: Colors.white,
+                          )
                         : null,
                   ),
                 ),
@@ -140,7 +142,8 @@ class _CampfireState extends State<CampfireMain> {
                     backgroundColor: Colors.blue.withOpacity(0.3),
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
@@ -159,26 +162,10 @@ class _CampfireState extends State<CampfireMain> {
     );
   }
 
-  void _navigateToSessionRoom(BuildContext context, Session session) {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            SessionRoom(session: session),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 500),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white.withOpacity(0.1),
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
@@ -189,8 +176,8 @@ class _CampfireState extends State<CampfireMain> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Colors.blue[900]!.withOpacity(0.3),
-                  Colors.black,
+                  Colors.white,
+                  Colors.white,
                 ],
               ),
             ),
@@ -229,24 +216,28 @@ class _CampfireState extends State<CampfireMain> {
                       16.0,
                     ),
                     sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         childAspectRatio: 0.7,
                         crossAxisSpacing: 16.0,
                         mainAxisSpacing: 16.0,
                       ),
                       delegate: SliverChildBuilderDelegate(
-                            (context, index) {
+                        (context, index) {
                           final session = sessions[index];
                           return GestureDetector(
-                            onTap: () => _navigateToSessionRoom(context, session),
+                            onTap: () => _showHostDetails(
+                                context,
+                                session
+                                    .host), // Changed to show host details instead
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: BackdropFilter(
                                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: Colors.blue[900]!.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
                                       color: Colors.white.withOpacity(0.2),
@@ -254,7 +245,8 @@ class _CampfireState extends State<CampfireMain> {
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.blue.withOpacity(0.1),
+                                        color:
+                                            Colors.blue[900]!.withOpacity(0.3),
                                         blurRadius: 20,
                                         spreadRadius: 5,
                                       ),
@@ -266,37 +258,54 @@ class _CampfireState extends State<CampfireMain> {
                                         child: Padding(
                                           padding: const EdgeInsets.all(16.0),
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               ClipRRect(
-                                                borderRadius: BorderRadius.circular(12),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
                                                 child: BackdropFilter(
-                                                  filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                                                  filter: ImageFilter.blur(
+                                                      sigmaX: 3, sigmaY: 3),
                                                   child: Container(
-                                                    padding: const EdgeInsets.symmetric(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
                                                       horizontal: 8,
                                                       vertical: 4,
                                                     ),
                                                     decoration: BoxDecoration(
                                                       color: session.isLive
-                                                          ? Colors.red.withOpacity(0.3)
-                                                          : Colors.grey.withOpacity(0.3),
-                                                      borderRadius: BorderRadius.circular(12),
+                                                          ? Colors.red
+                                                              .withOpacity(0.3)
+                                                          : Colors.grey
+                                                              .withOpacity(0.3),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
                                                       border: Border.all(
                                                         color: session.isLive
-                                                            ? Colors.red.withOpacity(0.5)
-                                                            : Colors.grey.withOpacity(0.5),
+                                                            ? Colors.red
+                                                                .withOpacity(
+                                                                    0.5)
+                                                            : Colors.grey
+                                                                .withOpacity(
+                                                                    0.5),
                                                         width: 1,
                                                       ),
                                                     ),
                                                     child: Text(
-                                                      session.isLive ? 'LIVE' : 'UPCOMING',
+                                                      session.isLive
+                                                          ? 'LIVE'
+                                                          : 'UPCOMING',
                                                       style: TextStyle(
                                                         color: session.isLive
                                                             ? Colors.white
-                                                            : Colors.white.withOpacity(0.7),
+                                                            : Colors.white
+                                                                .withOpacity(
+                                                                    0.7),
                                                         fontSize: 12,
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                                   ),
@@ -336,29 +345,37 @@ class _CampfireState extends State<CampfireMain> {
                                         ),
                                       ),
                                       InkWell(
-                                        onTap: () => _showHostDetails(context, session.host),
+                                        onTap: () => _showHostDetails(
+                                            context, session.host),
                                         child: ClipRRect(
                                           borderRadius: const BorderRadius.only(
                                             bottomLeft: Radius.circular(20),
                                             bottomRight: Radius.circular(20),
                                           ),
                                           child: BackdropFilter(
-                                            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                            filter: ImageFilter.blur(
+                                                sigmaX: 5, sigmaY: 5),
                                             child: Container(
                                               height: 72,
-                                              padding: const EdgeInsets.symmetric(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
                                                 horizontal: 16,
                                                 vertical: 12,
                                               ),
                                               decoration: BoxDecoration(
-                                                color: Colors.blue.withOpacity(0.2),
-                                                borderRadius: const BorderRadius.only(
-                                                  bottomLeft: Radius.circular(20),
-                                                  bottomRight: Radius.circular(20),
+                                                color: Colors.blue[900]!
+                                                    .withOpacity(0.2),
+                                                borderRadius:
+                                                    const BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(20),
+                                                  bottomRight:
+                                                      Radius.circular(20),
                                                 ),
                                                 border: Border(
                                                   top: BorderSide(
-                                                    color: Colors.white.withOpacity(0.1),
+                                                    color: Colors.white
+                                                        .withOpacity(0.1),
                                                     width: 1,
                                                   ),
                                                 ),
@@ -367,38 +384,56 @@ class _CampfireState extends State<CampfireMain> {
                                                 children: [
                                                   CircleAvatar(
                                                     radius: 20,
-                                                    backgroundImage: NetworkImage(session.host.imageUrl),
-                                                    backgroundColor: Colors.white.withOpacity(0.2),
-                                                    child: session.host.imageUrl.isEmpty
+                                                    backgroundColor: Colors
+                                                        .white
+                                                        .withOpacity(0.2),
+                                                    backgroundImage: session
+                                                            .host
+                                                            .imageUrl
+                                                            .isNotEmpty
+                                                        ? NetworkImage(session
+                                                            .host.imageUrl)
+                                                        : null,
+                                                    child: session.host.imageUrl
+                                                            .isEmpty
                                                         ? const Icon(
-                                                      Icons.person,
-                                                      size: 24,
-                                                      color: Colors.white,
-                                                    )
+                                                            Icons.person,
+                                                            size: 24,
+                                                            color: Colors.white,
+                                                          )
                                                         : null,
                                                   ),
                                                   const SizedBox(width: 12),
                                                   Expanded(
                                                     child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisSize: MainAxisSize.min,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
                                                       children: [
                                                         Text(
                                                           session.host.name,
                                                           maxLines: 1,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: const TextStyle(
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              const TextStyle(
                                                             color: Colors.white,
                                                             fontSize: 14,
-                                                            fontWeight: FontWeight.w500,
+                                                            fontWeight:
+                                                                FontWeight.w500,
                                                           ),
                                                         ),
                                                         Text(
                                                           session.host.role,
                                                           maxLines: 1,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: const TextStyle(
-                                                            color: Colors.white70,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              const TextStyle(
+                                                            color:
+                                                                Colors.white70,
                                                             fontSize: 12,
                                                           ),
                                                         ),
@@ -408,9 +443,11 @@ class _CampfireState extends State<CampfireMain> {
                                                   Container(
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
-                                                      color: Colors.white.withOpacity(0.1),
+                                                      color: Colors.white
+                                                          .withOpacity(0.1),
                                                       border: Border.all(
-                                                        color: Colors.white.withOpacity(0.2),
+                                                        color: Colors.white
+                                                            .withOpacity(0.2),
                                                         width: 1,
                                                       ),
                                                     ),
@@ -442,49 +479,6 @@ class _CampfireState extends State<CampfireMain> {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-// SessionRoom class from the original session_door.dart file
-class SessionRoom extends StatelessWidget {
-  final Session session;
-
-  const SessionRoom({super.key, required this.session});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: Text(session.title),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      extendBodyBehindAppBar: true,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.blue[900]!.withOpacity(0.4),
-              Colors.black,
-            ],
-          ),
-        ),
-        child: Center(
-          child: Text(
-            'You are now connected to ${session.title}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
       ),
     );
   }

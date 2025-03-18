@@ -39,7 +39,8 @@ class _CommunityState extends State<Community> {
         _filteredGroups = List.from(_communityGroups);
       } else {
         _filteredGroups = _communityGroups
-            .where((group) => group.name.toLowerCase().contains(query.toLowerCase()))
+            .where((group) =>
+                group.name.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
     });
@@ -75,7 +76,7 @@ class _CommunityState extends State<Community> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white.withOpacity(0.1),
       body: Stack(
         children: [
           // Background gradient
@@ -85,8 +86,8 @@ class _CommunityState extends State<Community> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Colors.blue[900]!.withOpacity(0.3),
-                  Colors.black,
+                  Colors.white,
+                  Colors.white,
                 ],
               ),
             ),
@@ -126,26 +127,43 @@ class _CommunityState extends State<Community> {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.white.withOpacity(0.2),
+                        Colors.white.withOpacity(0.05),
+                      ],
+                    ),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withOpacity(0.4),
                       width: 1,
                     ),
                   ),
                   child: ElevatedButton(
                     onPressed: _loadGroups,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: Colors.white.withOpacity(0.1),
                       elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 15),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text('Try Again'),
+                    child: const Text(
+                      'Try Again',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ),

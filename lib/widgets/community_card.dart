@@ -31,17 +31,30 @@ class CommunityCard extends StatelessWidget {
             height: 180,
             padding: const EdgeInsets.all(20.0),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.blue.withOpacity(0.2),
+                  Colors.blue[900]!.withOpacity(0.15),
+                ],
+              ),
               borderRadius: BorderRadius.circular(16.0),
               border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 1.5,
+                color: Colors.white
+                    .withOpacity(0.1), // Made border more transparent
+                width: 0.5, // Reduced border width
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue[700]!.withOpacity(0.2),
                   blurRadius: 20,
-                  spreadRadius: 5,
+                  spreadRadius: 2,
+                ),
+                BoxShadow(
+                  color: Colors.blue[300]!.withOpacity(0.1),
+                  blurRadius: 15,
+                  spreadRadius: -2,
                 ),
               ],
             ),
@@ -51,21 +64,29 @@ class CommunityCard extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.blue[300]!.withOpacity(0.5),
+                        Colors.blue[900]!.withOpacity(0.3),
+                      ],
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.3),
-                        blurRadius: 20,
-                        spreadRadius: 5,
+                        color: Colors.blue[700]!.withOpacity(0.3),
+                        blurRadius: 15,
+                        spreadRadius: 2,
                       ),
                     ],
                   ),
                   child: CircleAvatar(
                     radius: 30,
-                    backgroundColor: Colors.white.withOpacity(0.2),
+                    backgroundColor: Colors.transparent,
                     child: Icon(
                       Icons.group,
                       size: 35,
-                      color: Colors.white,
+                      color: Colors.white.withOpacity(0.9),
                     ),
                   ),
                 ),

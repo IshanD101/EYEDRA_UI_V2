@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../models/group_space_model.dart';
 import 'community_card.dart';
 
@@ -19,7 +20,8 @@ class GroupGrid extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 60, color: Colors.white.withOpacity(0.5)),
+            Icon(Icons.search_off,
+                size: 60, color: Colors.white.withOpacity(0.5)),
             const SizedBox(height: 16),
             Text(
               searchQuery.isEmpty
@@ -44,7 +46,23 @@ class GroupGrid extends StatelessWidget {
         itemCount: groups.length,
         itemBuilder: (context, index) {
           final group = groups[index];
-          return CommunityCard(group: group);
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(16.0),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16.0),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                    width: 1.5,
+                  ),
+                ),
+                child: CommunityCard(group: group),
+              ),
+            ),
+          );
         },
       ),
     );
