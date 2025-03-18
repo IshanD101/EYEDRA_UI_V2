@@ -118,6 +118,7 @@ class _NotificationPageState extends State<NotificationPage>
           ),
         ),
       ),
+      // Main content with Gradient backgroud
       body: Stack(
         children: [
           Container(
