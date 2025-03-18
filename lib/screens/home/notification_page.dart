@@ -10,7 +10,7 @@ class NotificationPage extends StatefulWidget {
   @override
   State<NotificationPage> createState() => _NotificationPageState();
 }
-
+//Notification Page using StatefulWidget
 class _NotificationPageState extends State<NotificationPage>
     with AutomaticKeepAliveClientMixin {
   late List<UserNotification> _notifications;
