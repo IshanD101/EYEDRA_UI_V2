@@ -3,7 +3,8 @@ import 'dart:ui';
 import 'package:eyedra_ui_v2/screens/EyedraBot/chatbot.dart';
 
 class CustomAppBar {
-  static PreferredSizeWidget buildGlassmorphicAppBar(BuildContext context,
+  static PreferredSizeWidget buildGlassmorphicAppBar(
+      BuildContext context,
       GlobalKey<ScaffoldState> scaffoldKey,
       String title,
       VoidCallback onProfileTap) {
@@ -33,49 +34,50 @@ class CustomAppBar {
                 ],
               ),
               child: Row(
-                  children: [
-              IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () {
-                scaffoldKey.currentState?.openDrawer();
-              },
-            ),
-            Expanded(
-              child: Center(
-                child: _buildColorfulText(title),
-              ),
-            ),
-                    IconButton(
-                      icon: const Icon(Icons.person, color: Colors.white),
-                      onPressed: onProfileTap,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Colors.white),
+                    onPressed: () {
+                      scaffoldKey.currentState?.openDrawer();
+                    },
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: _buildColorfulText(title),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => const ChatbotScreen(),
-                          );
-                        },
-                        child: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Image.asset(
-                            'assets/images/eyedra8.png',
-                            fit: BoxFit.contain,
-                          ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.person, color: Colors.white),
+                    onPressed: onProfileTap,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const ChatbotScreen(),
+                        );
+                      },
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Image.asset(
+                          'assets/images/eyedra8.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
-                 ],
-              ),// Will add row content later
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+
   static Widget _buildColorfulText(String text) {
     final colors = [
       const Color(0xFF74A3FF),
@@ -86,20 +88,24 @@ class CustomAppBar {
       const Color(0xFF7490FE),
     ];
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < text.length; i++)
-          Text(
-            text[i],
-            style: TextStyle(
-              color: i < colors.length ? colors[i] : colors[i % colors.length],
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < text.length; i++)
+            Text(
+              text[i],
+              style: TextStyle(
+                color:
+                    i < colors.length ? colors[i] : colors[i % colors.length],
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
