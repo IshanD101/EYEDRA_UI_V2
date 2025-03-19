@@ -41,6 +41,7 @@ dependencies:
   glassmorphism: ^3.0.0
   carousel_slider: ^5.0.0
   zego_uikit_prebuilt_video_conference: ^2.9.9
+  permission_handler: ^11.0.1
 
   # State management and utilities
   provider: ^6.1.2

@@ -2,25 +2,59 @@ import 'dart:math' as math;
 
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart'; // Add this import
 
 // Local imports:
 import '../../screens/virtual_campfire/mental_health_theme.dart'; // Updated import path
 import '../../screens/virtual_campfire/video_session.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final String? prefilledSessionId;
+
+  const HomePage({
+    Key? key,
+    this.prefilledSessionId,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
-  final conferenceIDController = TextEditingController(text: "mental_health_session");
-  final nameController = TextEditingController();
+  late TextEditingController conferenceIDController;
+  late TextEditingController nameController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Use prefilled session ID if available
+    conferenceIDController = TextEditingController(
+        text: widget.prefilledSessionId ?? "mental_health_session"
+    );
+    nameController = TextEditingController();
+
+    // Request camera and microphone permissions when page loads
+    _requestPermissions();
+  }
+
+  // Request camera and microphone permissions
+  Future<void> _requestPermissions() async {
+    await Permission.camera.request();
+    await Permission.microphone.request();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: MentalHealthTheme.primaryPurple,
+        foregroundColor: Colors.white,
+        title: const Text("Peer Support"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -116,8 +150,19 @@ class HomePageState extends State<HomePage> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (conferenceIDController.text.trim().isNotEmpty) {
+                          // Ensure permissions are granted before proceeding
+                          final cameraStatus = await Permission.camera.status;
+                          final micStatus = await Permission.microphone.status;
+
+                          if (!cameraStatus.isGranted || !micStatus.isGranted) {
+                            // Re-request permissions if not granted
+                            await _requestPermissions();
+                          }
+
+                          // Navigate to video conference page
+                          if (!mounted) return;
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) {
@@ -126,6 +171,14 @@ class HomePageState extends State<HomePage> {
                                 userName: nameController.text.trim(),
                               );
                             }),
+                          );
+                        } else {
+                          // Show error if session ID is empty
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Please enter a session ID"),
+                              backgroundColor: Colors.red,
+                            ),
                           );
                         }
                       },
