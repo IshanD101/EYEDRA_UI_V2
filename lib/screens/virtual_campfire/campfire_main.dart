@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../models/campfire_listener_data.dart';
-import '../../screens/virtual_campfire/video_session.dart'; // Added import for video session
+import '../../screens/virtual_campfire/home_page_camp.dart'; // Updated import to use HomePage
 
 class CampfireMain extends StatefulWidget {
   const CampfireMain({super.key});
@@ -116,15 +116,14 @@ class _CampfireState extends State<CampfireMain> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      // Navigate to video session
+                      // Navigate to HomePage from your individual project
                       Navigator.pop(context); // Close the dialog first
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          return VideoConferencePage(
-                            conferenceID: host.name.replaceAll(' ', '_').toLowerCase() + "_session",
-                            userName: "", // User can enter their name in the session
-                          );
+                          // Pre-populate the session ID with the host's name
+                          final sessionId = host.name.replaceAll(' ', '_').toLowerCase() + "_session";
+                          return HomePage(prefilledSessionId: sessionId);
                         }),
                       );
                     },
@@ -154,8 +153,8 @@ class _CampfireState extends State<CampfireMain> {
     int crossAxisCount = screenWidth > 1200
         ? 4
         : screenWidth > 800
-            ? 3
-            : 2;
+        ? 3
+        : 2;
 
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(0.8),
@@ -177,7 +176,7 @@ class _CampfireState extends State<CampfireMain> {
 
           return Padding(
             padding:
-                EdgeInsets.only(top: MediaQuery.of(context).padding.top + 16),
+            EdgeInsets.only(top: MediaQuery.of(context).padding.top + 16),
             child: GridView.builder(
               padding: const EdgeInsets.all(16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -263,7 +262,7 @@ class _CampfireState extends State<CampfireMain> {
                                     boxShadow: [
                                       BoxShadow(
                                         color:
-                                            Colors.blue[700]!.withOpacity(0.3),
+                                        Colors.blue[700]!.withOpacity(0.3),
                                         blurRadius: 15,
                                         spreadRadius: 2,
                                       ),
@@ -273,13 +272,13 @@ class _CampfireState extends State<CampfireMain> {
                                     radius: 20,
                                     backgroundColor: Colors.transparent,
                                     backgroundImage: session
-                                            .host.imageUrl.isNotEmpty
+                                        .host.imageUrl.isNotEmpty
                                         ? NetworkImage(session.host.imageUrl)
                                         : null,
                                     child: session.host.imageUrl.isEmpty
                                         ? Icon(Icons.person,
-                                            color:
-                                                Colors.white.withOpacity(0.9))
+                                        color:
+                                        Colors.white.withOpacity(0.9))
                                         : null,
                                   ),
                                 ),
@@ -287,7 +286,7 @@ class _CampfireState extends State<CampfireMain> {
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(session.host.name,
                                           style: const TextStyle(
