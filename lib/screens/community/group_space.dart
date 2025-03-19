@@ -76,38 +76,34 @@ class _CommunityState extends State<Community> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: Colors.white.withOpacity(0.1),
-      body: Stack(
-        children: [
-          // Background gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white,
-                  Colors.white,
-                ],
+      backgroundColor: Colors.black.withOpacity(0.8),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: [
+              // Content
+              SafeArea(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: constraints.maxWidth * 0.05,
+                      ),
+                      child: SearchBarWidget(
+                        controller: _searchController,
+                        onChanged: _filterGroups,
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildBody(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-          // Content
-          SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 10),
-                SearchBarWidget(
-                  controller: _searchController,
-                  onChanged: _filterGroups,
-                ),
-                Expanded(
-                  child: _buildBody(),
-                ),
-              ],
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
