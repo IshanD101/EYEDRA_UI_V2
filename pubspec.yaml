@@ -42,6 +42,10 @@ dependencies:
   carousel_slider: ^5.0.0
   zego_uikit_prebuilt_video_conference: ^2.9.9
   permission_handler: ^11.0.1
+  webview_flutter: ^4.2.2
+  webview_flutter_android: ^3.9.2
+  url_launcher: ^6.1.12
+  camera: ^0.11.1
 
   # State management and utilities
   provider: ^6.1.2
