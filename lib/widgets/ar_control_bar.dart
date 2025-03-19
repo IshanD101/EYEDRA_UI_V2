@@ -35,86 +35,56 @@ class ARControlBar extends StatelessWidget {
           stops: const [0.1, 0.5, 0.9],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // AR World button
-
-
-            // AR Experience Launch button (center, larger)
-            _buildCenterLaunchButton(),
-
-            // AR Effects Gallery
-
+            // AR World button with colorful text in the center
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildCenterLaunchButton(),
+                const SizedBox(width: 12),
+                _buildColorfulText("AR WORLD"),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildARControlButton({
-    required IconData icon,
-    required String label,
-    required Color glowColor,
-  }) {
-    return Column(
+  Widget _buildColorfulText(String text) {
+    // Define colors for each letter
+    final List<Color> colors = [
+      Colors.red,
+      Colors.orange,
+      Colors.yellow,
+      Colors.green,
+      Colors.blue,
+      Colors.indigo,
+      Colors.purple,
+      Colors.pink,
+    ];
+
+    return Row(
       mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: glowColor.withOpacity(0.6),
-                blurRadius: 15,
-                spreadRadius: 1,
+      children: List.generate(text.length, (index) {
+        return Text(
+          text[index],
+          style: TextStyle(
+            color: colors[index % colors.length],
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+            shadows: [
+              Shadow(
+                color: colors[index % colors.length].withOpacity(0.7),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
-          child: GlassmorphicContainer(
-            width: 42,
-            height: 42,
-            borderRadius: 42,
-            blur: 5,
-            alignment: Alignment.center,
-            border: 1.5,
-            linearGradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.2),
-                Colors.white.withOpacity(0.1),
-              ],
-              stops: const [0.1, 1],
-            ),
-            borderGradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                glowColor.withOpacity(0.6),
-                Colors.white.withOpacity(0.5),
-                glowColor.withOpacity(0.6),
-              ],
-              stops: const [0.1, 0.5, 0.9],
-            ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.9),
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+        );
+      }),
     );
   }
 
