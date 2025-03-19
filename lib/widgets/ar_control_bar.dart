@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 
+import '../../AR/home_screen_AR.dart';
+
 class ARControlBar extends StatelessWidget {
   const ARControlBar({Key? key}) : super(key: key);
 
@@ -41,7 +43,7 @@ class ARControlBar extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildCenterLaunchButton(),
+                _buildCenterLaunchButton(context),
                 const SizedBox(width: 12),
                 _buildColorfulText("AR WORLD"),
               ],
@@ -88,56 +90,65 @@ class ARControlBar extends StatelessWidget {
     );
   }
 
-  Widget _buildCenterLaunchButton() {
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.8),
-            blurRadius: 20,
-            spreadRadius: 3,
-          ),
-        ],
-      ),
-      child: GlassmorphicContainer(
+  Widget _buildCenterLaunchButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to your individual project's HomeScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      },
+      child: Container(
         width: 60,
         height: 60,
-        borderRadius: 60,
-        blur: 15,
-        alignment: Alignment.center,
-        border: 2,
-        linearGradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.withOpacity(0.3),
-            Colors.purple.withOpacity(0.3),
-          ],
-          stops: const [0.1, 1],
-        ),
-        borderGradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.withOpacity(0.8),
-            Colors.cyan.withOpacity(0.8),
-            Colors.purple.withOpacity(0.8),
-          ],
-          stops: const [0.1, 0.5, 0.9],
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Pulse animation would go here with AnimatedBuilder
-            Icon(
-              Icons.view_in_ar,
-              color: Colors.white,
-              size: 28,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.withOpacity(0.8),
+              blurRadius: 20,
+              spreadRadius: 3,
             ),
           ],
+        ),
+        child: GlassmorphicContainer(
+          width: 60,
+          height: 60,
+          borderRadius: 60,
+          blur: 15,
+          alignment: Alignment.center,
+          border: 2,
+          linearGradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.blue.withOpacity(0.3),
+              Colors.purple.withOpacity(0.3),
+            ],
+            stops: const [0.1, 1],
+          ),
+          borderGradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.blue.withOpacity(0.8),
+              Colors.cyan.withOpacity(0.8),
+              Colors.purple.withOpacity(0.8),
+            ],
+            stops: const [0.1, 0.5, 0.9],
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Pulse animation would go here with AnimatedBuilder
+              Icon(
+                Icons.view_in_ar,
+                color: Colors.white,
+                size: 28,
+              ),
+            ],
+          ),
         ),
       ),
     );
