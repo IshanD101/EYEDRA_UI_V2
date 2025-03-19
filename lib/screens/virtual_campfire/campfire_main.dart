@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../models/campfire_listener_data.dart';
+import '../../screens/virtual_campfire/video_session.dart'; // Added import for video session
 
 class CampfireMain extends StatefulWidget {
   const CampfireMain({super.key});
@@ -89,7 +90,7 @@ class _CampfireState extends State<CampfireMain> {
                           : null,
                       child: host.imageUrl.isEmpty
                           ? Icon(Icons.person,
-                              size: 60, color: Colors.white.withOpacity(0.9))
+                          size: 60, color: Colors.white.withOpacity(0.9))
                           : null,
                     ),
                   ),
@@ -114,7 +115,19 @@ class _CampfireState extends State<CampfireMain> {
                     ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {}, // Placeholder for join functionality
+                    onPressed: () {
+                      // Navigate to video session
+                      Navigator.pop(context); // Close the dialog first
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return VideoConferencePage(
+                            conferenceID: host.name.replaceAll(' ', '_').toLowerCase() + "_session",
+                            userName: "", // User can enter their name in the session
+                          );
+                        }),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
