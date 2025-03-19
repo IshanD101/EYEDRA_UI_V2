@@ -7,7 +7,7 @@ import 'package:eyedra_ui_v2/screens/home/side_bar.dart';
 import 'package:eyedra_ui_v2/screens/profile/profile_page.dart';
 import 'package:eyedra_ui_v2/screens/virtual_campfire/campfire_main.dart';
 import 'package:eyedra_ui_v2/widgets/feed_list.dart';
-import 'package:eyedra_ui_v2/widgets/status_bar.dart'; // Import the StatusBar widget
+import 'package:eyedra_ui_v2/widgets/ar_control_bar.dart'; // Updated import for ARControlBar
 import 'AppBar.dart'; // Import the custom AppBar
 
 void main() {
@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
         context,
         _scaffoldKey,
         titles[_currentIndex],
-        () {
+            () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => ProfilePage()),
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 if (_currentIndex == 0)
-                  const StatusBar(), // StatusBar only on feed page
+                  const ARControlBar(), // Updated to use ARControlBar
                 Expanded(
                   child: pages[_currentIndex], // Display selected page
                 ),
