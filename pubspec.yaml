@@ -40,6 +40,7 @@ dependencies:
   google_fonts: ^6.1.0
   glassmorphism: ^3.0.0
   carousel_slider: ^5.0.0
+  zego_uikit_prebuilt_video_conference: ^2.9.9
 
   # State management and utilities
   provider: ^6.1.2
