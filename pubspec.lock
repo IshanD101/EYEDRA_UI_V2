@@ -1137,10 +1137,10 @@ packages:
     dependency: transitive
     description:
       name: zego_uikit
-      sha256: "94e2ed3f25655737ea9e33cceed41dff4074e26ab33f15150b96188c90177a4c"
+      sha256: "1a7a4cc5ca5781571e71250fcbfa457145670798aedc151bb2a0caa88bf9401f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.28.10"
+    version: "2.28.11"
   zego_uikit_prebuilt_video_conference:
     dependency: "direct main"
     description:

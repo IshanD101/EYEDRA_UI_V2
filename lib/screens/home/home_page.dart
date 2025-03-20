@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 if (_currentIndex == 0)
-                  const StatusBar(), // StatusBar only on feed page
+                  const ARControlBar(), // StatusBar only on feed page
                 Expanded(
                   child: pages[_currentIndex], // Display selected page
                 ),
