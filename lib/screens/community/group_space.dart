@@ -76,7 +76,7 @@ class _CommunityState extends State<Community> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: Colors.black.withOpacity(0.8),
+      backgroundColor: Colors.grey[900]!.withOpacity(0.6),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Stack(
@@ -132,8 +132,8 @@ class _CommunityState extends State<Community> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Colors.white.withOpacity(0.2),
-                        Colors.white.withOpacity(0.05),
+                        Colors.grey[900]!.withOpacity(0.6),
+                        Colors.grey[600]!.withOpacity(0.6),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(12),
@@ -145,7 +145,7 @@ class _CommunityState extends State<Community> {
                   child: ElevatedButton(
                     onPressed: _loadGroups,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.1),
+                      backgroundColor: Colors.grey[900]!.withOpacity(0.1),
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 30, vertical: 15),

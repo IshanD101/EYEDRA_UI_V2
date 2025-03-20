@@ -7,8 +7,9 @@ import 'package:eyedra_ui_v2/screens/home/side_bar.dart';
 import 'package:eyedra_ui_v2/screens/profile/profile_page.dart';
 import 'package:eyedra_ui_v2/screens/virtual_campfire/campfire_main.dart';
 import 'package:eyedra_ui_v2/widgets/feed_list.dart';
-import 'package:eyedra_ui_v2/widgets/ar_control_bar.dart'; // Import the StatusBar widget
-import 'AppBar.dart'; // Import the custom AppBar
+import 'package:eyedra_ui_v2/widgets/ar_control_bar.dart';
+import 'AppBar.dart';
+import 'dart:ui';
 
 void main() {
   runApp(MaterialApp(
@@ -48,16 +49,23 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar.buildGlassmorphicAppBar(
-        context,
-        _scaffoldKey,
-        titles[_currentIndex],
-        () {
-          Navigator.push(
+      // Add a Container with background color that wraps the AppBar
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          color: Colors.grey[900]!.withOpacity(0.6), // Background color for the AppBar
+          child: CustomAppBar.buildGlassmorphicAppBar(
             context,
-            MaterialPageRoute(builder: (context) => ProfilePage()),
-          );
-        },
+            _scaffoldKey,
+            titles[_currentIndex],
+                () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+            },
+          ),
+        ),
       ),
       drawer: Drawer(
         child: SideBar(
@@ -71,27 +79,51 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Stack(
         children: [
-          SafeArea(
-            child: Column(
-              children: [
-                if (_currentIndex == 0)
-                  const ARControlBar(), // StatusBar only on feed page
-                Expanded(
-                  child: pages[_currentIndex], // Display selected page
-                ),
-              ],
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: CustomGlassmorphicNavBar(
-              selectedIndex: _currentIndex,
-              onItemTapped: (int newIndex) {
-                setState(() {
-                  _currentIndex = newIndex;
-                });
-              },
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.grey[900]!.withOpacity(0.6),
+              ),
             ),
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      if (_currentIndex == 0) const ARControlBar(),
+                      Expanded(
+                        child: pages[_currentIndex],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey[900]!.withOpacity(0.6),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: CustomGlassmorphicNavBar(
+                    selectedIndex: _currentIndex,
+                    onItemTapped: (int newIndex) {
+                      setState(() {
+                        _currentIndex = newIndex;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
