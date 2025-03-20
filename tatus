@@ -1,0 +1,81 @@
+[33mc65b91c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msanjula_new[m[33m, [m[1;31morigin/development[m[33m, [m[1;32mdevelopment[m[33m)[m Merge pull request #15 from IshanD101/dilethni
+[33m99de175[m[33m ([m[1;31morigin/dilethni[m[33m)[m Merge branch 'development' into dilethni
+[33m78265e2[m Merge pull request #14 from IshanD101/chathnindu_new
+[33m44e20d5[m[33m ([m[1;31morigin/chathnindu_new[m[33m)[m Incoming changes before connecting campfire main to development
+[33m96c3ce4[m Remove comment button and comment section
+[33m5f0354c[m Incoming added dependencies..
+[33mdb831eb[m Incoming changes new
+[33meacddb7[m Made changes to navigation bar
+[33m4dbbf58[m Incoming additional design changes
+[33m4f0be7f[m Adjusted the home page to accomodate  status_bar.dart file..
+[33mc8ff0d6[m Adding status_bar.dart file..
+[33m011c839[m Remove the session_door.dart file and adjust the campfire_main.dart file..
+[33mbc0a1c5[m Adjust the issues with side_bar.dart file ..
+[33m76cc7de[m Adjust the  navigation.dart file ..
+[33md162a22[m Fixed the rendering issue in AppBar.dart file ..
+[33m7b98900[m Making changes to notification page
+[33m191aa70[m Add the session_door.dart file..
+[33m7403edf[m Incoming changes for campfire_main.dart file..
+[33m6500979[m Incoming changes ..
+[33mb857634[m Change the styling of header part
+[33me583643[m Creating ban_member_dialog.dart file..
+[33mb3f5cd0[m Making adjustments to chat_bubble.dart file..
+[33md48d9d1[m Making adjustments to group_member.dart file..
+[33md048f29[m Making adjustments to group_chat_screen.dart file..
+[33m6d6027c[m Making adjustments to glass_app_bar.dart file..
+[33mab6ff91[m Making adjustments to message.dart file..
+[33m7e16aab[m Making adjustments to add_member_dialog.dart file..
+[33mbe90fc5[m Making adjustments to glass_app_bar.dart file..
+[33m859da72[m Adding group.dart file..
+[33m1d168d0[m Adding group_details_dialog.dart file..
+[33mf4b2571[m Adding group_member.dart file..
+[33mf020086[m Adding add_member_dialog.dart file..
+[33md8b8719[m Adding chat_bubble.dart file..
+[33m8fefad3[m Adding glass_app_bar.dart file..
+[33m7c0e374[m Adding message_input.dart file..
+[33m4cd587a[m Adding message.dart file..
+[33md62b055[m Creating and adding community card..
+[33m1ad24ff[m Creating and adding group grid..
+[33m2af0d59[m Making changes to group chat screen - 002
+[33m723e50c[m Making changes to group space - 004
+[33m670173a[m Adding search bar..
+[33md93a7c9[m Adding group service..
+[33md60da96[m Adding group space model..
+[33m5d8fd72[m Making changes to group space - 003
+[33m7852370[m Making changes to group space - 002
+[33md550c2b[m Making changes to group chat screen - 001
+[33m5b0b43c[m Making changes to group space - 001
+[33m1c5b150[m Adding group chat screen..
+[33m775ff67[m Adding group space..
+[33mbc1f61a[m Changed header colors of feed page
+[33mfd63cf5[m Changed the post grid view
+[33med67539[m Changed the style
+[33m3c945c6[m Changed add post container
+[33ma47fa60[m Glassmorphism effect added to the user profile page
+[33md9688d8[m Removing impeller rendering..
+[33m50aadd2[m Adding necessary dependencies..
+[33m67eaec4[m Gradle file modifications
+[33mb417d2b[m Changed profile editing
+[33md3c2cd9[m Add post feature added
+[33m7a44137[m Profile editing changed
+[33mcbed4d0[m Merge remote-tracking branch 'origin/chathnindu_new' into chathnindu_new
+[33m4b73991[m Create a new branch for FE development
+[33m49289f7[m Add back button in Post Details page
+[33m180738d[m Bug fixing
+[33m8cd6843[m Complete PostDetailScreen with comments and shares
+[33m63c7524[m Add likes and content to PostDetailScreen
+[33m6f79a27[m Add username and interaction icons to PostDetailScreen
+[33mafc8768[m Add basic PostDetailScreen with image
+[33m325a2fe[m Add navigation and error handling to GridView
+[33mdac0cff[m Add GridView to FeedMain
+[33m5ab6033[m Add more dummy posts
+[33mbc0acdb[m Clean the feed
+[33md1e94c3[m Implement post interactions and complete UI styling
+[33m29b7405[m Add post images with loading and error handling
+[33m0573825[m Add basic feed structure and post model integration
+[33m02ba904[m post model
+[33med1381f[m code clean
+[33mf8526ce[m[33m ([m[1;31morigin/joshua[m[33m, [m[1;31morigin/campfire-front-end[m[33m)[m Merge pull request #12 from IshanD101/sanjula_new
+[33m0d48957[m Merge pull request #11 from IshanD101/ishan
+[33m4eb48ff[m[33m ([m[1;31morigin/ishan[m[33m)[m files changed
+[33mcccb162[m changes done in posts
