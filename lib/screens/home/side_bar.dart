@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:eyedra_ui_v2/screens/listener_registration.dart';  // Import the Listener Registration Page
 
 class SideBar extends StatelessWidget {
   final Function(int) onMenuItemSelected;
@@ -14,7 +15,7 @@ class SideBar extends StatelessWidget {
         bottomRight: Radius.circular(20),
       ),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15), // Updated blur effect
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15), // Glassmorphism effect
         child: Container(
           width: MediaQuery.of(context).size.width * 0.6,
           decoration: BoxDecoration(
@@ -45,6 +46,7 @@ class SideBar extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
+              // Sidebar Header
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: const BoxDecoration(
@@ -66,10 +68,12 @@ class SideBar extends StatelessWidget {
                   ),
                 ),
               ),
+
+              // Sidebar Items
               _buildMenuItem(Icons.info, 'About', 0, context),
               _buildMenuItem(Icons.lock, 'Privacy Policy', 1, context),
               _buildMenuItem(Icons.fireplace, 'Campfire', 2, context),
-              _buildMenuItem(Icons.headset_mic, 'Listener', 3, context),
+              _buildListenerMenuItem(context),  // Updated Listener button
             ],
           ),
         ),
@@ -77,15 +81,15 @@ class SideBar extends StatelessWidget {
     );
   }
 
+  /// Generic Menu Item Builder
   Widget _buildMenuItem(
       IconData icon, String title, int index, BuildContext context) {
     return ListTile(
-      leading:
-          Icon(icon, color: Colors.white.withOpacity(0.9)), // Darker icon color
+      leading: Icon(icon, color: Colors.white.withOpacity(0.9)),
       title: Text(
         title,
         style: TextStyle(
-          color: Colors.white.withOpacity(0.9), // Darker text color
+          color: Colors.white.withOpacity(0.9),
           fontSize: 18,
           fontWeight: FontWeight.w500,
         ),
@@ -99,8 +103,34 @@ class SideBar extends StatelessWidget {
       splashColor: Colors.blueAccent.withOpacity(0.3),
     );
   }
+
+  /// Updated "Listener" Button to Open the Registration Page
+  Widget _buildListenerMenuItem(BuildContext context) {
+    return ListTile(
+      leading: Icon(Icons.headset_mic, color: Colors.white.withOpacity(0.9)),
+      title: Text(
+        "Become a Listener",
+        style: TextStyle(
+          color: Colors.white.withOpacity(0.9),
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      onTap: () {
+        Navigator.pop(context);  // Close Sidebar
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListenerRegistrationPage()),
+        );
+      },
+      tileColor: Colors.transparent,
+      splashColor: Colors.greenAccent.withOpacity(0.3),
+    );
+  }
 }
 
+/// Function to Display the Sidebar as a Modal Bottom Sheet
 void showSideBar(BuildContext context, Function(int) onMenuItemSelected) {
   showModalBottomSheet(
     context: context,
