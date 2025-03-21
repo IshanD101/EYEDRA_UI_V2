@@ -29,12 +29,13 @@ class _HomePageState extends State<HomePage> {
 
   int _currentIndex = 0;
 
+  // Modified: Removed ProfilePage from the direct pages list
   final List<Widget> pages = [
     FeedList(),
     Community(),
     CampfireMain(),
     FeedMain(),
-    ProfilePage(),
+    Container(), // Empty container as placeholder for Profile
   ];
 
   final List<String> titles = [
@@ -59,6 +60,7 @@ class _HomePageState extends State<HomePage> {
             _scaffoldKey,
             titles[_currentIndex],
                 () {
+              // Navigate to profile as a new screen
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
@@ -100,6 +102,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       if (_currentIndex == 0) const ARControlBar(),
                       Expanded(
+                        // Only show the current page if it's not the profile page
                         child: pages[_currentIndex],
                       ),
                     ],
@@ -116,9 +119,21 @@ class _HomePageState extends State<HomePage> {
                   child: CustomGlassmorphicNavBar(
                     selectedIndex: _currentIndex,
                     onItemTapped: (int newIndex) {
-                      setState(() {
-                        _currentIndex = newIndex;
-                      });
+                      // Modified: Handle profile navigation separately
+                      if (newIndex == 4) {
+                        // Profile tab - open as a new window
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfilePage(),
+                          ),
+                        );
+                      } else {
+                        // Other tabs - switch tabs as normal
+                        setState(() {
+                          _currentIndex = newIndex;
+                        });
+                      }
                     },
                   ),
                 ),

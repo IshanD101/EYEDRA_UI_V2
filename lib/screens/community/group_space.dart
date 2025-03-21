@@ -1,10 +1,9 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import '/models/group_space_model.dart';
 import '/services/group_service.dart';
+import '/widgets/community_card.dart';
 import '/widgets/search_bar.dart';
-import '/widgets/group_grid.dart';
 
 class Community extends StatefulWidget {
   const Community({Key? key}) : super(key: key);
@@ -15,11 +14,11 @@ class Community extends StatefulWidget {
 
 class _CommunityState extends State<Community> {
   bool _isLoading = false;
-  String? _error;
   List<CommunityGroup> _communityGroups = [];
   List<CommunityGroup> _filteredGroups = [];
-  final TextEditingController _searchController = TextEditingController();
+  String userRole = "Normal_user"; // Change to "Listener" or "Admin" to test
   final GroupService _groupService = GroupService();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -33,43 +32,103 @@ class _CommunityState extends State<Community> {
     super.dispose();
   }
 
+  Future<void> _loadGroups() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final groups = await _groupService.fetchGroups();
+    setState(() {
+      _communityGroups = groups;
+      _filteredGroups = List.from(groups);
+      _isLoading = false;
+    });
+  }
+
   void _filterGroups(String query) {
     setState(() {
       if (query.isEmpty) {
         _filteredGroups = List.from(_communityGroups);
       } else {
         _filteredGroups = _communityGroups
-            .where((group) =>
-                group.name.toLowerCase().contains(query.toLowerCase()))
+            .where((group) => group.name.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
     });
   }
 
-  Future<void> _loadGroups() async {
+  void _createGroup() {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController descController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Create Group"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: nameController, decoration: InputDecoration(labelText: "Group Name")),
+              TextField(controller: descController, decoration: InputDecoration(labelText: "Description")),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _communityGroups.add(CommunityGroup(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    name: nameController.text,
+                    imageUrl: '',
+                    description: descController.text.isNotEmpty
+                        ? descController.text
+                        : "No description available",
+                    memberCount: 0,
+                  ));
+                });
+                Navigator.pop(context);
+              },
+              child: Text("Create"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _confirmDeleteGroup(String groupId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Delete Group"),
+        content: Text("Are you sure you want to delete this group?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _deleteGroup(groupId);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text("Delete"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteGroup(String groupId) {
     setState(() {
-      _isLoading = true;
-      _error = null;
+      _communityGroups.removeWhere((group) => group.id == groupId);
     });
-
-    try {
-      final groups = await _groupService.fetchGroups();
-
-      if (mounted) {
-        setState(() {
-          _communityGroups = groups;
-          _filteredGroups = List.from(groups);
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _isLoading = false;
-        });
-      }
-    }
   }
 
   @override
@@ -77,101 +136,58 @@ class _CommunityState extends State<Community> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.grey[900]!.withOpacity(0.6),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Stack(
-            children: [
-              // Content
-              SafeArea(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: constraints.maxWidth * 0.05,
-                      ),
-                      child: SearchBarWidget(
-                        controller: _searchController,
-                        onChanged: _filterGroups,
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildBody(),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+      floatingActionButton: (userRole == "Listener" || userRole == "Admin")
+          ? FloatingActionButton(
+        onPressed: _createGroup,
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
+      )
+          : null,
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(height: 10),
+
+            /// **🔍 Search Bar**
+            SearchBarWidget(
+              controller: _searchController,
+              onChanged: _filterGroups,
+            ),
+
+            Expanded(child: _buildBody()),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator());
     }
 
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(_error!, style: const TextStyle(color: Colors.red)),
-            const SizedBox(height: 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.grey[900]!.withOpacity(0.6),
-                        Colors.grey[600]!.withOpacity(0.6),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.4),
-                      width: 1,
-                    ),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: _loadGroups,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[900]!.withOpacity(0.1),
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Try Again',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+    if (_filteredGroups.isEmpty) {
+      return Center(child: Text("No groups found", style: TextStyle(color: Colors.white)));
     }
 
-    return GroupGrid(
-      groups: _filteredGroups,
-      searchQuery: _searchController.text,
+    return ListView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: _filteredGroups.length,
+      itemBuilder: (context, index) {
+        CommunityGroup group = _filteredGroups[index];
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: CommunityCard(
+            groupId: group.id,
+            groupName: group.name,
+            description: group.description ?? "No description available",
+            members: group.memberCount ?? 0,
+            canDelete: userRole == "Listener" || userRole == "Admin",
+            onDelete: () => _confirmDeleteGroup(group.id),
+          ),
+        );
+      },
     );
   }
 }

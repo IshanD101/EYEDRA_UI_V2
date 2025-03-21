@@ -22,7 +22,7 @@ class _CampfireState extends State<CampfireMain> {
   void _showHostDetails(BuildContext context, Host host) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.grey[900]!.withOpacity(0.6),
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -157,7 +157,7 @@ class _CampfireState extends State<CampfireMain> {
         : 2;
 
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.8),
+      backgroundColor: Colors.grey[900]!.withOpacity(0.6),
       extendBodyBehindAppBar: true,
       body: FutureBuilder<List<Session>>(
         future: _sessionsFuture,
