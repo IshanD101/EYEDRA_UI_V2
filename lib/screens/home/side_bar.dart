@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:eyedra_ui_v2/screens/listener_registration.dart';  // Import the Listener Registration Page
 
 class SideBar extends StatefulWidget {
   final Function(int) onMenuItemSelected;
@@ -20,11 +21,13 @@ class _SideBarState extends State<SideBar> {
         bottomRight: Radius.circular(20),
       ),
       child: BackdropFilter(
+
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           width: MediaQuery.of(context).size.width * 0.6,
           decoration: BoxDecoration(
             gradient: LinearGradient(
+
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
@@ -37,11 +40,13 @@ class _SideBarState extends State<SideBar> {
               bottomRight: Radius.circular(20),
             ),
             border: Border.all(
+
               color: Colors.white.withOpacity(0.2),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
+
                 color: Colors.blue.withOpacity(0.1),
                 blurRadius: 20,
                 spreadRadius: 5,
@@ -51,6 +56,7 @@ class _SideBarState extends State<SideBar> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
+
               ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(20),
@@ -164,10 +170,93 @@ class _SideBarState extends State<SideBar> {
           ),
         ),
       ),
+
+              // Sidebar Header
+//               Container(
+//                 padding: const EdgeInsets.all(20),
+//                 decoration: const BoxDecoration(
+//                   gradient: LinearGradient(
+//                     colors: [Colors.purple, Colors.deepPurple],
+//                     begin: Alignment.topLeft,
+//                     end: Alignment.bottomRight,
+//                   ),
+//                   borderRadius: BorderRadius.only(
+//                     topRight: Radius.circular(20),
+//                   ),
+//                 ),
+//                 child: const Text(
+//                   'EYEDRA Menu',
+//                   style: TextStyle(
+//                     color: Colors.white,
+//                     fontSize: 24,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//               ),
+
+//               // Sidebar Items
+//               _buildMenuItem(Icons.info, 'About', 0, context),
+//               _buildMenuItem(Icons.lock, 'Privacy Policy', 1, context),
+//               _buildMenuItem(Icons.fireplace, 'Campfire', 2, context),
+//               _buildListenerMenuItem(context),  // Updated Listener button
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   /// Generic Menu Item Builder
+//   Widget _buildMenuItem(
+//       IconData icon, String title, int index, BuildContext context) {
+//     return ListTile(
+//       leading: Icon(icon, color: Colors.white.withOpacity(0.9)),
+//       title: Text(
+//         title,
+//         style: TextStyle(
+//           color: Colors.white.withOpacity(0.9),
+//           fontSize: 18,
+//           fontWeight: FontWeight.w500,
+//         ),
+//       ),
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+//       onTap: () {
+//         Navigator.pop(context);
+//         onMenuItemSelected(index);
+//       },
+//       tileColor: Colors.transparent,
+//       splashColor: Colors.blueAccent.withOpacity(0.3),
+// 
+    );
+  }
+
+  /// Updated "Listener" Button to Open the Registration Page
+  Widget _buildListenerMenuItem(BuildContext context) {
+    return ListTile(
+      leading: Icon(Icons.headset_mic, color: Colors.white.withOpacity(0.9)),
+      title: Text(
+        "Become a Listener",
+        style: TextStyle(
+          color: Colors.white.withOpacity(0.9),
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      onTap: () {
+        Navigator.pop(context);  // Close Sidebar
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListenerRegistrationPage()),
+        );
+      },
+      tileColor: Colors.transparent,
+      splashColor: Colors.greenAccent.withOpacity(0.3),
     );
   }
 }
 
+/// Function to Display the Sidebar as a Modal Bottom Sheet
 void showSideBar(BuildContext context, Function(int) onMenuItemSelected) {
   showModalBottomSheet(
     context: context,

@@ -1,8 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../models/community_space_model.dart';
+import '/models/group_space_model.dart';
+import '/services/group_service.dart';
+import '/widgets/community_card.dart';
+import '/widgets/search_bar.dart';
 
 class Community extends StatefulWidget {
-  const Community({super.key});
+  const Community({Key? key}) : super(key: key);
 
   @override
   State<Community> createState() => _CommunityState();
@@ -10,15 +14,16 @@ class Community extends StatefulWidget {
 
 class _CommunityState extends State<Community> {
   bool _isLoading = false;
-  String? _error;
   List<CommunityGroup> _communityGroups = [];
   List<CommunityGroup> _filteredGroups = [];
+  String userRole = "Normal_user"; // Change to "Listener" or "Admin" to test
+  final GroupService _groupService = GroupService();
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _fetchCommunityGroups();
+    _loadGroups();
   }
 
   @override
@@ -27,275 +32,162 @@ class _CommunityState extends State<Community> {
     super.dispose();
   }
 
+  Future<void> _loadGroups() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final groups = await _groupService.fetchGroups();
+    setState(() {
+      _communityGroups = groups;
+      _filteredGroups = List.from(groups);
+      _isLoading = false;
+    });
+  }
+
   void _filterGroups(String query) {
     setState(() {
       if (query.isEmpty) {
         _filteredGroups = List.from(_communityGroups);
       } else {
         _filteredGroups = _communityGroups
-            .where((group) =>
-                group.name.toLowerCase().contains(query.toLowerCase()))
+            .where((group) => group.name.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
     });
   }
 
-  Future<void> _fetchCommunityGroups() async {
+  void _createGroup() {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController descController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Create Group"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: nameController, decoration: InputDecoration(labelText: "Group Name")),
+              TextField(controller: descController, decoration: InputDecoration(labelText: "Description")),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _communityGroups.add(CommunityGroup(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    name: nameController.text,
+                    imageUrl: '',
+                    description: descController.text.isNotEmpty
+                        ? descController.text
+                        : "No description available",
+                    memberCount: 0,
+                  ));
+                });
+                Navigator.pop(context);
+              },
+              child: Text("Create"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _confirmDeleteGroup(String groupId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Delete Group"),
+        content: Text("Are you sure you want to delete this group?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _deleteGroup(groupId);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text("Delete"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteGroup(String groupId) {
     setState(() {
-      _isLoading = true;
-      _error = null;
+      _communityGroups.removeWhere((group) => group.id == groupId);
     });
-
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-
-      final List<Map<String, dynamic>> sampleData = [
-        {
-          'id': '1',
-          'name': 'Peaceful Yoga',
-          'imageUrl': '',
-          'description': 'A community for photography enthusiasts',
-          'memberCount': 150,
-          'createdAt': '2024-02-24T10:00:00Z',
-        },
-        {
-          'id': '2',
-          'name': 'Book Readers',
-          'imageUrl': '',
-          'description': 'Share your favorite books and discuss',
-          'memberCount': 200,
-          'createdAt': '2024-02-23T15:30:00Z',
-        },
-      ];
-
-      final groups =
-          sampleData.map((json) => CommunityGroup.fromJson(json)).toList();
-
-      setState(() {
-        _communityGroups = groups;
-        _filteredGroups = List.from(groups);
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = 'Failed to load community groups';
-        _isLoading = false;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Container(
-          height: 45,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: TextField(
-            controller: _searchController,
-            onChanged: _filterGroups,
-            decoration: InputDecoration(
-              hintText: 'Search communities...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.grey),
-                      onPressed: () {
-                        _searchController.clear();
-                        _filterGroups('');
-                      },
-                    )
-                  : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.grey[900]!.withOpacity(0.6),
+      floatingActionButton: (userRole == "Listener" || userRole == "Admin")
+          ? FloatingActionButton(
+        onPressed: _createGroup,
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
+      )
+          : null,
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(height: 10),
+
+            /// **🔍 Search Bar**
+            SearchBarWidget(
+              controller: _searchController,
+              onChanged: _filterGroups,
             ),
-          ),
+
+            Expanded(child: _buildBody()),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _fetchCommunityGroups,
-            color: Theme.of(context).primaryColor,
-          ),
-        ],
-      ),
-      body: _buildBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Implement create community functionality
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _error!,
-              style: const TextStyle(color: Colors.red),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _fetchCommunityGroups,
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
+      return Center(child: CircularProgressIndicator());
     }
 
     if (_filteredGroups.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.search_off,
-              size: 64,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _searchController.text.isEmpty
-                  ? 'No communities found'
-                  : 'No communities match your search',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-      );
+      return Center(child: Text("No groups found", style: TextStyle(color: Colors.white)));
     }
 
-    return RefreshIndicator(
-      onRefresh: _fetchCommunityGroups,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 0.85,
+    return ListView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: _filteredGroups.length,
+      itemBuilder: (context, index) {
+        CommunityGroup group = _filteredGroups[index];
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: CommunityCard(
+            groupId: group.id,
+            groupName: group.name,
+            description: group.description ?? "No description available",
+            members: group.memberCount ?? 0,
+            canDelete: userRole == "Listener" || userRole == "Admin",
+            onDelete: () => _confirmDeleteGroup(group.id),
           ),
-          itemCount: _filteredGroups.length,
-          itemBuilder: (context, index) {
-            final group = _filteredGroups[index];
-            return CommunityCard(
-              groupName: group.name,
-              imageUrl: group.imageUrl,
-              memberCount: group.memberCount,
-              onTap: () {
-                print('Tapped on ${group.name}');
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-// CommunityCard widget remains the same
-class CommunityCard extends StatelessWidget {
-  final String groupName;
-  final String imageUrl;
-  final int? memberCount;
-  final VoidCallback onTap;
-
-  const CommunityCard({
-    super.key,
-    required this.groupName,
-    required this.imageUrl,
-    this.memberCount,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.group,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                children: [
-                  Text(
-                    groupName,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                  ),
-                  if (memberCount != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '$memberCount members',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 }

@@ -93,36 +93,69 @@ class Session {
 class SessionService {
   static Future<List<Session>> fetchSessions() async {
     try {
+      // Added a small delay to simulate network request
+      await Future.delayed(const Duration(milliseconds: 800));
+
       return [
         Session(
           id: '1',
-          title: 'Mindful Yoga',
+          title: 'Mindful Yoga for Stress Relief',
           host: Host(
             id: 'h1',
-            name: 'Sarah',
-            role: 'Senior Councellor',
+            name: 'Sarah Johnson',
+            role: 'Senior Counselor',
             imageUrl: '',
             members: 6,
-            bio: 'Councelling with 3+ years of experience.',
+            bio: 'Counseling professional with 3+ years of experience in mindfulness and stress management techniques.',
           ),
           startTime: '10:00 AM',
-          category: 'Yoga',
+          category: 'Yoga & Mindfulness',
           isLive: true,
         ),
         Session(
           id: '2',
-          title: 'Meditate',
+          title: 'Deep Meditation Practice',
           host: Host(
             id: 'h2',
-            name: 'Ishan',
-            role: 'Councellor',
+            name: 'Ishan Patel',
+            role: 'Meditation Guide',
             imageUrl: '',
             members: 4,
-            bio: 'Councelling with 8+ years of experience.',
+            bio: 'Certified meditation instructor with 8+ years of experience in guided meditation and breathing techniques.',
           ),
           startTime: '11:30 AM',
           category: 'Meditation',
           isLive: false,
+        ),
+        Session(
+          id: '3',
+          title: 'Anxiety Management',
+          host: Host(
+            id: 'h3',
+            name: 'Emma Chen',
+            role: 'Clinical Psychologist',
+            imageUrl: '',
+            members: 8,
+            bio: 'Specializing in anxiety and stress disorders with a holistic approach to mental wellness.',
+          ),
+          startTime: '2:00 PM',
+          category: 'Mental Health',
+          isLive: false,
+        ),
+        Session(
+          id: '4',
+          title: 'Sound Healing Journey',
+          host: Host(
+            id: 'h4',
+            name: 'Miguel Santos',
+            role: 'Sound Therapist',
+            imageUrl: '',
+            members: 12,
+            bio: 'Creating therapeutic sound experiences to promote relaxation and inner balance.',
+          ),
+          startTime: '4:30 PM',
+          category: 'Sound Therapy',
+          isLive: true,
         ),
       ];
     } catch (e) {
