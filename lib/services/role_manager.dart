@@ -1,5 +1,5 @@
 import 'package:jwt_decoder/jwt_decoder.dart';
-import './auth_servcie.dart';
+import './auth_service.dart';
 
 class RoleManager {
   final AuthService _authService = AuthService();

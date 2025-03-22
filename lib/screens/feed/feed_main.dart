@@ -28,61 +28,7 @@ class _FeedState extends State<FeedMain> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(
-          "Explore",
-          style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white.withOpacity(0.9)
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.2),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blue.withOpacity(0.1),
-                        blurRadius: 15,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Icon(Icons.search, color: Colors.white.withOpacity(0.9)),
-                ),
-              ),
-            ),
-          ),
-        ],
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.blue[900]!.withOpacity(0.3),
-                Colors.black.withOpacity(0.5),
-              ],
-            ),
-          ),
-        ),
-      ),
+      // AppBar removed
       body: Stack(
         children: [
           // Background gradient
@@ -99,13 +45,13 @@ class _FeedState extends State<FeedMain> {
             ),
           ),
 
-          // Content
+          // Content - padding adjusted since AppBar is removed
           Padding(
-            padding: EdgeInsets.only(top: AppBar().preferredSize.height + 20),
+            padding: const EdgeInsets.only(top: 12.0),
             child: GridView.builder(
               padding: const EdgeInsets.all(12.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // Changed to show 3 posts per row
+                crossAxisCount: 3,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 childAspectRatio: 0.75,
@@ -170,7 +116,6 @@ class _FeedState extends State<FeedMain> {
           ),
         ],
       ),
-      // Floating action button removed
     );
   }
 }
@@ -184,62 +129,7 @@ class PostDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Container(
-              margin: const EdgeInsets.only(left: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blue.withOpacity(0.1),
-                    blurRadius: 15,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.white.withOpacity(0.9)),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
-          ),
-        ),
-        title: Text(
-          "Explore",
-          style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white.withOpacity(0.9)
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.blue[900]!.withOpacity(0.3),
-                Colors.black.withOpacity(0.5),
-              ],
-            ),
-          ),
-        ),
-      ),
+      // AppBar removed
       body: Stack(
         children: [
           // Background gradient
@@ -256,12 +146,12 @@ class PostDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // Content
+          // Content - padding adjusted since AppBar is removed
           SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: AppBar().preferredSize.height + 20),
+                const SizedBox(height: 16), // Reduced top padding
                 // Post image
                 Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -387,7 +277,7 @@ class PostDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
 
-                            // Interaction buttons - removed comment button
+                            // Interaction buttons
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
