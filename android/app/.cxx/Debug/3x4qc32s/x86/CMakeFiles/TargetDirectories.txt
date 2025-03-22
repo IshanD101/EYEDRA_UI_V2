@@ -1,0 +1,2 @@
+F:/font end eyedra new/EYEDRA_UI_V2/android/app/.cxx/Debug/3x4qc32s/x86/CMakeFiles/edit_cache.dir
+F:/font end eyedra new/EYEDRA_UI_V2/android/app/.cxx/Debug/3x4qc32s/x86/CMakeFiles/rebuild_cache.dir
