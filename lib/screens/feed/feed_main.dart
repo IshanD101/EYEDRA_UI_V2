@@ -1,20 +1,7 @@
-import 'package:eyedra_ui_v2/models/post_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-
-// Dummy data
-final List<Post> dummyPosts = [
-  Post(username: "user1", content: "Post 1", imageUrl: "https://picsum.photos/id/237/200/300"),
-  Post(username: "user2", content: "Post 2", imageUrl: "https://picsum.photos/id/238/200/300"),
-  Post(username: "user3", content: "Post 3", imageUrl: "https://picsum.photos/id/239/200/300"),
-  Post(username: "user4", content: "Post 4", imageUrl: "https://picsum.photos/id/240/200/300"),
-  Post(username: "user5", content: "Post 5", imageUrl: "https://picsum.photos/id/241/200/300"),
-  Post(username: "user6", content: "Post 6", imageUrl: "https://picsum.photos/id/242/200/300"),
-  Post(username: "user7", content: "Post 7", imageUrl: "https://picsum.photos/id/243/200/300"),
-  Post(username: "user8", content: "Post 8", imageUrl: "https://picsum.photos/id/244/200/300"),
-  Post(username: "user9", content: "Post 9", imageUrl: "https://picsum.photos/id/245/200/300"),
-  Post(username: "user10", content: "Post 10", imageUrl: "https://picsum.photos/id/246/200/300"),
-];
+import 'package:eyedra_ui_v2/models/post_model.dart';
+import 'package:eyedra_ui_v2/services/post_service.dart';
 
 class FeedMain extends StatefulWidget {
   const FeedMain({super.key});
@@ -24,6 +11,39 @@ class FeedMain extends StatefulWidget {
 }
 
 class _FeedState extends State<FeedMain> {
+  final PostService _postService = PostService();
+  List<Post> _posts = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPosts();
+  }
+
+  Future<void> _loadPosts() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      // Using the fetchAllPosts method from PostService
+      final posts = await _postService.fetchAllPosts();
+
+      setState(() {
+        _posts = posts;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to load posts: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,76 +65,160 @@ class _FeedState extends State<FeedMain> {
             ),
           ),
 
-          // Content - padding adjusted since AppBar is removed
+          // Content area
           Padding(
             padding: const EdgeInsets.only(top: 12.0),
-            child: GridView.builder(
-              padding: const EdgeInsets.all(12.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: dummyPosts.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    try {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PostDetailScreen(post: dummyPosts[index]),
-                        ),
-                      );
-                    } catch (e) {
-                      print('Navigation error: $e');
-                    }
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
-                            width: 1,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blue.withOpacity(0.1),
-                              blurRadius: 15,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            dummyPosts[index].imageUrl,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey[800],
-                                child: const Center(
-                                  child: Icon(Icons.error, color: Colors.white54),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+            child: _buildContent(),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _loadPosts,
+        backgroundColor: Colors.blue[900]!.withOpacity(0.8),
+        child: const Icon(Icons.refresh),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: Colors.white,
+        ),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                _errorMessage!,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _loadPosts,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue[900],
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Try Again'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_posts.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.inbox,
+                color: Colors.white.withOpacity(0.5),
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No posts available',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 18,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _loadPosts,
+      color: Colors.blue[900],
+      backgroundColor: Colors.white.withOpacity(0.1),
+      child: GridView.builder(
+        padding: const EdgeInsets.all(12.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.75,
+        ),
+        itemCount: _posts.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              try {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PostDetailScreen(post: _posts[index]),
+                  ),
+                );
+              } catch (e) {
+                print('Navigation error: $e');
+              }
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.1),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.1),
+                        blurRadius: 15,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      _posts[index].imageUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[800],
+                          child: const Center(
+                            child: Icon(Icons.error, color: Colors.white54),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -129,7 +233,22 @@ class PostDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      // AppBar removed
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           // Background gradient
@@ -146,12 +265,12 @@ class PostDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // Content - padding adjusted since AppBar is removed
+          // Content
           SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 16), // Reduced top padding
+                const SizedBox(height: 70), // Space for AppBar
                 // Post image
                 Padding(
                   padding: const EdgeInsets.all(16.0),

@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:eyedra_ui_v2/screens/login.dart';
-
-// Model class kept in same file for simplicity
-class Post {
-  final String title;
-  final String description;
-
-  Post({
-    required this.title,
-    required this.description,
-  });
-}
+import 'package:eyedra_ui_v2/models/post_model.dart';
+import 'package:eyedra_ui_v2/services/api_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -25,7 +18,84 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController bioController = TextEditingController(text: "User is a Software Engineering student at IIT, affiliated with the University of Westminster.");
   TextEditingController postTitleController = TextEditingController();
   TextEditingController postDescriptionController = TextEditingController();
-  List<Post> posts = [];
+  List<dynamic> posts = [];
+  bool isLoading = true;
+  File? selectedImage;
+
+  final ApiService _apiService = ApiService();
+  final ImagePicker _imagePicker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+    _loadUserPosts();
+  }
+
+  // Load user profile data from backend
+  Future<void> _loadUserData() async {
+    try {
+      final userData = await _apiService.getUserProfile();
+      setState(() {
+        nameController.text = userData['name'] ?? 'User';
+        bioController.text = userData['bio'] ?? 'No bio available';
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading user data: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  // Load user posts from backend
+  Future<void> _loadUserPosts() async {
+    try {
+      final userPosts = await _apiService.getUserPosts();
+      setState(() {
+        posts = userPosts;
+      });
+    } catch (e) {
+      print('Error loading posts: $e');
+      // Show error snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Failed to load posts'),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  // Method to pick image from gallery
+  Future<void> _pickImage() async {
+    final XFile? image = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+
+    if (image != null) {
+      setState(() {
+        selectedImage = File(image.path);
+      });
+    }
+  }
+
+  // Method to pick image from camera
+  Future<void> _takePhoto() async {
+    final XFile? photo = await _imagePicker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 80,
+    );
+
+    if (photo != null) {
+      setState(() {
+        selectedImage = File(photo.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +105,9 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.black,
         extendBodyBehindAppBar: true,
         appBar: _buildAppBar(context),
-        body: Stack(
+        body: isLoading
+            ? _buildLoadingIndicator()
+            : Stack(
           children: [
             // Background gradient
             _buildBackgroundGradient(),
@@ -47,41 +119,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Refactored app bar
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      title: Text(
-        "User user",
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue[900]),
-      ),
-      backgroundColor: Colors.grey[900]?.withOpacity(0.7),
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.pop(context),
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.exit_to_app, color: Colors.blue[800]),
-          onPressed: () {
-            _showSignOutDialog(context);
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.settings, color: Colors.blue[800]),
-          onPressed: () {},
-        ),
-      ],
-      flexibleSpace: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(color: Colors.transparent),
-        ),
-      ),
-    );
-  }
-
-  // Extracted background gradient
   Widget _buildBackgroundGradient() {
     return Container(
       decoration: BoxDecoration(
@@ -97,7 +134,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Main content
   Widget _buildMainContent() {
     return SafeArea(
       child: CustomScrollView(
@@ -139,7 +175,362 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Profile header component
+  Widget _buildCreatePostButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.1),
+                width: 1,
+              ),
+            ),
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.3),
+                      blurRadius: 15,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.add_circle,
+                    color: Colors.blue[400],
+                    size: 72,
+                  ),
+                  onPressed: () => _showCreatePostDialog(context),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridView() {
+    final displayPosts = posts.isEmpty
+        ? List.generate(9, (index) => Post(
+        username: "User $index",
+        content: "Description $index",
+        imageUrl: "https://example.com/image$index.jpg"
+    ))
+        : posts;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 12.0,
+          mainAxisSpacing: 12.0,
+        ),
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: displayPosts.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () => _showPostDetailsDialog(context, displayPosts[index].description),
+            child: _buildGridItem(displayPosts[index].title),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showPostDetailsDialog(BuildContext context, String details) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (context) {
+        return _buildGlassDialog(
+          title: "Item Details",
+          content: Text(
+            details,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white.withOpacity(0.8),
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: _getDialogButtonStyle(),
+              child: const Text("Close"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildGlassTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    int maxLines = 1,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        style: TextStyle(color: Colors.white.withOpacity(0.9)),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+          prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.7)),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.blue.withOpacity(0.5), width: 1.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageUploadArea() {
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.cloud_upload,
+              color: Colors.white.withOpacity(0.7),
+              size: 40,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Upload Image",
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "Tap to browse",
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.5),
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildGridItem(String title) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.1),
+              width: 1,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassDialog({
+    required String title,
+    required Widget content,
+    required List<Widget> actions,
+  }) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.2),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withOpacity(0.1),
+                blurRadius: 20,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white.withOpacity(0.9),
+                ),
+              ),
+              const SizedBox(height: 20),
+              content,
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: actions,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  ButtonStyle _getDialogButtonStyle() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: Colors.blue.withOpacity(0.3),
+      foregroundColor: Colors.white,
+      elevation: 0,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListView() {
+    final displayPosts = posts.isEmpty
+        ? List.generate(5, (index) => Post(
+        username: "User $index",
+        content: "Description $index",
+        imageUrl: "https://example.com/image$index.jpg"
+    ))
+        : posts;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: displayPosts.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: _buildListItem(displayPosts[index]),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildListItem(Post post) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.1),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.article,
+                  color: Colors.blue[400],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      post.username,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      post.content,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildProfileHeader() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16.0),
@@ -192,7 +583,47 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Profile avatar with edit button
+  Widget _buildFollowButton() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.2),
+              width: 1,
+            ),
+          ),
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 30,
+                vertical: 12,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: const Text(
+              "Follow",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildProfileAvatar() {
     return Stack(
       children: [
@@ -250,300 +681,27 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Follow button
-  Widget _buildFollowButton() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.2),
-              width: 1,
+  // Loading indicator
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.7),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              color: Colors.blue[400],
             ),
-          ),
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 30,
-                vertical: 12,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            child: const Text(
-              "Follow",
+            const SizedBox(height: 16),
+            const Text(
+              "Loading profile...",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Create post button
-  Widget _buildCreatePostButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.1),
-                width: 1,
-              ),
-            ),
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blue.withOpacity(0.3),
-                      blurRadius: 15,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.add_circle,
-                    color: Colors.blue[400],
-                    size: 72,
-                  ),
-                  onPressed: () => _showCreatePostDialog(context),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Grid view for posts
-  Widget _buildGridView() {
-    final displayPosts = posts.isEmpty
-        ? List.generate(9, (index) => Post(title: "Item $index", description: "Description $index"))
-        : posts;
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 12.0,
-          mainAxisSpacing: 12.0,
-        ),
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: displayPosts.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () => _showPostDetailsDialog(context, displayPosts[index].description),
-            child: _buildGridItem(displayPosts[index].title),
-          );
-        },
-      ),
-    );
-  }
-
-  // Extracted grid item
-  Widget _buildGridItem(String title) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.1),
-              width: 1,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // List view for posts
-  Widget _buildListView() {
-    final displayPosts = posts.isEmpty
-        ? List.generate(5, (index) => Post(title: "Post $index", description: "Description of post $index"))
-        : posts;
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: displayPosts.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: _buildListItem(displayPosts[index]),
-          );
-        },
-      ),
-    );
-  }
-
-  // Extracted list item
-  Widget _buildListItem(Post post) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.1),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.article,
-                  color: Colors.blue[400],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      post.title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      post.description,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white.withOpacity(0.7),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Reusable text field for forms
-  Widget _buildGlassTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    int maxLines = 1,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.1),
-          width: 1,
-        ),
-      ),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        style: TextStyle(color: Colors.white.withOpacity(0.9)),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-          prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.7)),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.blue.withOpacity(0.5), width: 1.5),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Extracted image upload area
-  Widget _buildImageUploadArea() {
-    return Container(
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.1),
-          width: 1,
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.cloud_upload,
-              color: Colors.white.withOpacity(0.7),
-              size: 40,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Upload Image",
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              "Tap to browse",
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 12,
               ),
             ),
           ],
@@ -552,26 +710,84 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Dialog methods
-  void _showPostDetailsDialog(BuildContext context, String details) {
+  // Refactored app bar
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        nameController.text,
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue[900]),
+      ),
+      backgroundColor: Colors.grey[900]?.withOpacity(0.7),
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.exit_to_app, color: Colors.blue[800]),
+          onPressed: () {
+            _showSignOutDialog(context);
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.settings, color: Colors.blue[800]),
+          onPressed: () {},
+        ),
+      ],
+      flexibleSpace: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(color: Colors.transparent),
+        ),
+      ),
+    );
+  }
+
+  // Image upload area - UPDATED to handle actual image selection
+
+  // Show dialog to choose image source
+  void _showImageSourceDialog() {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.5),
       builder: (context) {
         return _buildGlassDialog(
-          title: "Item Details",
-          content: Text(
-            details,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white.withOpacity(0.8),
-            ),
+          title: "Select Image Source",
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.photo_library, color: Colors.white.withOpacity(0.8)),
+                title: Text(
+                  "Gallery",
+                  style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage();
+                },
+              ),
+              Divider(color: Colors.white.withOpacity(0.2)),
+              ListTile(
+                leading: Icon(Icons.camera_alt, color: Colors.white.withOpacity(0.8)),
+                title: Text(
+                  "Camera",
+                  style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _takePhoto();
+                },
+              ),
+            ],
           ),
           actions: [
-            ElevatedButton(
+            TextButton(
               onPressed: () => Navigator.pop(context),
-              style: _getDialogButtonStyle(),
-              child: const Text("Close"),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white.withOpacity(0.7),
+              ),
+              child: const Text("Cancel"),
             ),
           ],
         );
@@ -579,7 +795,83 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // Handle post creation - UPDATED to work with backend
+  void _handleCreatePost(BuildContext context) async {
+    if (postTitleController.text.isNotEmpty) {
+      // Show loading indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Creating post...'),
+          backgroundColor: Colors.blue.withOpacity(0.8),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+
+      try {
+        bool success = await _apiService.createPost(
+          postTitleController.text,
+          postDescriptionController.text,
+          selectedImage,
+        );
+
+        Navigator.pop(context); // Close dialog
+
+        if (success) {
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Post created successfully!'),
+              backgroundColor: Colors.green.withOpacity(0.8),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+
+          // Reload posts
+          setState(() {
+            selectedImage = null;
+          });
+          _loadUserPosts();
+
+        } else {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Failed to create post'),
+              backgroundColor: Colors.red.withOpacity(0.8),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } catch (e) {
+        Navigator.pop(context); // Close dialog
+
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red.withOpacity(0.8),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } else {
+      // Show error for empty title
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Post title cannot be empty'),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  // Edit profile method - UPDATED to work with backend
   void _editProfileWindow(BuildContext context) {
+    // Create temp controllers to handle cancellation
+    final tempNameController = TextEditingController(text: nameController.text);
+    final tempBioController = TextEditingController(text: bioController.text);
+
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.5),
@@ -590,13 +882,13 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildGlassTextField(
-                controller: nameController,
+                controller: tempNameController,
                 label: "Name",
                 icon: Icons.person,
               ),
               const SizedBox(height: 16),
               _buildGlassTextField(
-                controller: bioController,
+                controller: tempBioController,
                 label: "Bio",
                 icon: Icons.description,
                 maxLines: 3,
@@ -612,9 +904,50 @@ class _ProfilePageState extends State<ProfilePage> {
               child: const Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () {
-                setState(() {});
+              onPressed: () async {
+                // Show loading indicator
                 Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Updating profile...'),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+
+                try {
+                  bool success = await _apiService.updateProfile(
+                    tempNameController.text,
+                    tempBioController.text,
+                  );
+
+                  if (success) {
+                    setState(() {
+                      nameController.text = tempNameController.text;
+                      bioController.text = tempBioController.text;
+                    });
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Profile updated successfully!'),
+                        backgroundColor: Colors.green.withOpacity(0.8),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Failed to update profile'),
+                        backgroundColor: Colors.red.withOpacity(0.8),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: ${e.toString()}'),
+                      backgroundColor: Colors.red.withOpacity(0.8),
+                    ),
+                  );
+                }
               },
               style: _getDialogButtonStyle(),
               child: const Text("Save"),
@@ -625,10 +958,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Create post dialog
+  // Create post dialog - UPDATED to include image picker
   void _showCreatePostDialog(BuildContext context) {
     postTitleController.clear();
     postDescriptionController.clear();
+    setState(() {
+      selectedImage = null;
+    });
 
     showDialog(
       context: context,
@@ -636,24 +972,111 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (context) {
         return _buildGlassDialog(
           title: "Create New Post",
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildGlassTextField(
-                controller: postTitleController,
-                label: "Post Title",
-                icon: Icons.title,
-              ),
-              const SizedBox(height: 16),
-              _buildGlassTextField(
-                controller: postDescriptionController,
-                label: "Post Description",
-                icon: Icons.description,
-                maxLines: 5,
-              ),
-              const SizedBox(height: 16),
-              _buildImageUploadArea(),
-            ],
+          content: StatefulBuilder(
+              builder: (context, setDialogState) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildGlassTextField(
+                      controller: postTitleController,
+                      label: "Post Title",
+                      icon: Icons.title,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildGlassTextField(
+                      controller: postDescriptionController,
+                      label: "Post Description",
+                      icon: Icons.description,
+                      maxLines: 5,
+                    ),
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: () async {
+                        // Close the dialog temporarily to show the image source dialog
+                        Navigator.of(context).pop();
+                        _showImageSourceDialog();
+                        // Re-open the create post dialog
+                        Future.delayed(const Duration(milliseconds: 300), () {
+                          _showCreatePostDialog(context);
+                        });
+                      },
+                      child: Container(
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.1),
+                            width: 1,
+                          ),
+                        ),
+                        child: selectedImage == null
+                            ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.cloud_upload,
+                                color: Colors.white.withOpacity(0.7),
+                                size: 40,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Upload Image",
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Tap to select from gallery or camera",
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.5),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                            : Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.file(
+                                selectedImage!,
+                                width: double.infinity,
+                                height: 150,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedImage = null;
+                                  });
+                                  setDialogState(() {});
+                                },
+                                child: CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: Colors.black.withOpacity(0.6),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }
           ),
           actions: [
             TextButton(
@@ -674,114 +1097,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Handle post creation
-  void _handleCreatePost(BuildContext context) {
-    if (postTitleController.text.isNotEmpty) {
-      setState(() {
-        posts.add(Post(
-          title: postTitleController.text,
-          description: postDescriptionController.text,
-        ));
-      });
-      Navigator.pop(context);
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Post created successfully!'),
-          backgroundColor: Colors.green.withOpacity(0.8),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
-    } else {
-      // Show error for empty title
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Post title cannot be empty'),
-          backgroundColor: Colors.red.withOpacity(0.8),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
-    }
-  }
-
-  // Reusable glassmorphic dialog
-  Widget _buildGlassDialog({
-    required String title,
-    required Widget content,
-    required List<Widget> actions,
-  }) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.2),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.blue.withOpacity(0.1),
-                blurRadius: 20,
-                spreadRadius: 5,
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.9),
-                ),
-              ),
-              const SizedBox(height: 20),
-              content,
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: actions,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Button style for dialogs
-  ButtonStyle _getDialogButtonStyle() {
-    return ElevatedButton.styleFrom(
-      backgroundColor: Colors.blue.withOpacity(0.3),
-      foregroundColor: Colors.white,
-      elevation: 0,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Colors.white.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-    );
-  }
-
-  // Add this new method to the _ProfilePageState class
+  // Sign out method - UPDATED to work with backend
   void _showSignOutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -842,16 +1158,18 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(width: 16),
                       ElevatedButton(
-                        onPressed: () {
-                          // First close the dialog
+                        onPressed: () async {
+                          // Close the dialog
                           Navigator.pop(context);
 
-                          // Then navigate to login page by popping until we reach it
-                          // This ensures we don't keep stacking pages
+                          // Sign out from backend
+                          await _apiService.signOut();
+
+                          // Navigate to login page
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(builder: (context) => const LoginForm()),
-                                (route) => false, // This removes all previous routes
+                                (route) => false,
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -879,4 +1197,7 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
+
+// Keep the remaining methods from your original code
+// ...
 }
