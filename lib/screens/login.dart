@@ -1,6 +1,7 @@
 import 'package:eyedra_ui_v2/screens/home/home_page.dart';
 import 'package:eyedra_ui_v2/screens/register.dart';
 import 'package:flutter/material.dart';
+import 'package:eyedra_ui_v2/services/auth_api.dart'; // Import the AuthApi
 
 void main() {
   runApp(MaterialApp(
@@ -17,7 +18,10 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+  String? _errorMessage;
 
+  final AuthApi _authApi = AuthApi(); // Create instance of AuthApi
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
@@ -28,6 +32,43 @@ class _LoginFormState extends State<LoginForm> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // Login function to call the API
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final result = await _authApi.login(
+        _emailController.text,
+        _passwordController.text,
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (result['success']) {
+        // Navigate to home page on successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = result['error'];
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'An unexpected error occurred. Please try again.';
+      });
+      print('Login error: $e');
+    }
   }
 
   @override
@@ -99,18 +140,25 @@ class _LoginFormState extends State<LoginForm> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
+                      // Display error message if login fails
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            _errorMessage!,
+                            style: TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      const SizedBox(height: 16),
                       SizedBox(
                         width: 200,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: _isLoading ? null : () {
                             if (_formKey.currentState!.validate()) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomePage()),
-                              );
+                              _login();
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -119,7 +167,9 @@ class _LoginFormState extends State<LoginForm> {
                               borderRadius: BorderRadius.circular(25),
                             ),
                           ),
-                          child: const Text(
+                          child: _isLoading
+                              ? CircularProgressIndicator(color: Colors.white)
+                              : const Text(
                             'Login',
                             style: TextStyle(
                               fontSize: 16,
@@ -166,12 +216,12 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Widget _buildTextField(
-    TextEditingController controller,
-    String label, {
-    TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
-    Widget? suffixIcon,
-  }) {
+      TextEditingController controller,
+      String label, {
+        TextInputType keyboardType = TextInputType.text,
+        bool obscureText = false,
+        Widget? suffixIcon,
+      }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
@@ -187,8 +237,16 @@ class _LoginFormState extends State<LoginForm> {
         if (value == null || value.isEmpty) {
           return 'Please enter your $label';
         }
+        if (label == 'Email' && !_isValidEmail(value)) {
+          return 'Please enter a valid email address';
+        }
         return null;
       },
     );
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    return emailRegExp.hasMatch(email);
   }
 }

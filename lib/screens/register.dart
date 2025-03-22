@@ -1,6 +1,7 @@
 import 'package:eyedra_ui_v2/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:eyedra_ui_v2/services/auth_api.dart'; // Import the AuthApi
 
 void main() {
   runApp(MaterialApp(
@@ -17,13 +18,16 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+  String? _errorMessage;
+  String _phoneNumber = '';
 
+  final AuthApi _authApi = AuthApi(); // Create instance of AuthApi
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -31,9 +35,58 @@ class _RegisterFormState extends State<RegisterForm> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
-    _mobileController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // Register function to call the API
+  Future<void> _register() async {
+    setState(() {// Create user data map for API request
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+
+      final userData = {
+        'firstName': _firstNameController.text,
+        'lastName': _lastNameController.text,
+        'email': _emailController.text,
+        'phoneNumber': _phoneNumber,
+        'password': _passwordController.text,
+      };
+
+      final result = await _authApi.register(userData);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (result['success']) {
+        // Show success message and navigate to login
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registration successful! Please log in.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginForm()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = result['error'];
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'An unexpected error occurred. Please try again.';
+      });
+      print('Registration error: $e');
+    }
   }
 
   @override
@@ -53,7 +106,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     colors: [
                       Colors.purpleAccent,
                       Colors.blue
-                    ], // Gradient colors
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ).createShader(bounds),
@@ -62,8 +115,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Colors
-                          .white, // The color is ignored by ShaderMask, but it still needs to be set.
+                      color: Colors.white,
                       letterSpacing: 5,
                     ),
                   ),
@@ -102,10 +154,14 @@ class _RegisterFormState extends State<RegisterForm> {
                             child: IntlPhoneField(
                               initialCountryCode: 'LK',
                               decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                borderSide: BorderSide(),
-                                borderRadius: BorderRadius.circular(8.0),
-                              )),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              onChanged: (phone) {
+                                _phoneNumber = phone.completeNumber;
+                              },
                             ),
                           ),
                         ],
@@ -128,18 +184,25 @@ class _RegisterFormState extends State<RegisterForm> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
+                      // Display error message if registration fails
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            _errorMessage!,
+                            style: TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      const SizedBox(height: 16),
                       SizedBox(
                         width: 200,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: _isLoading ? null : () {
                             if (_formKey.currentState!.validate()) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginForm()),
-                              );
+                              _register();
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -148,7 +211,9 @@ class _RegisterFormState extends State<RegisterForm> {
                               borderRadius: BorderRadius.circular(25),
                             ),
                           ),
-                          child: const Text(
+                          child: _isLoading
+                              ? CircularProgressIndicator(color: Colors.white)
+                              : const Text(
                             'Register',
                             style: TextStyle(
                               fontSize: 16,
@@ -195,12 +260,12 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _buildTextField(
-    TextEditingController controller,
-    String label, {
-    TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
-    Widget? suffixIcon,
-  }) {
+      TextEditingController controller,
+      String label, {
+        TextInputType keyboardType = TextInputType.text,
+        bool obscureText = false,
+        Widget? suffixIcon,
+      }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
@@ -212,14 +277,25 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
         suffixIcon: suffixIcon,
         contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        errorStyle: TextStyle(height: 0),
+        errorStyle: TextStyle(height: 0.8),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please enter your $label';
         }
+        if (label == 'Email' && !_isValidEmail(value)) {
+          return 'Please enter a valid email address';
+        }
+        if (label == 'Password' && value.length < 6) {
+          return 'Password must be at least 6 characters';
+        }
         return null;
       },
     );
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    return emailRegExp.hasMatch(email);
   }
 }
