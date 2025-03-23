@@ -43,3 +43,52 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+gradle-wrapper.jar
+/.gradle
+/captures/
+/gradlew
+/gradlew.bat
+/local.properties
+GeneratedPluginRegistrant.java
+
+# Remember to never publicly share your keystore.
+# See https://flutter.dev/to/reference-keystore
+key.properties
+*/.keystore
+*/.jks
+
+# Android specific for Flutter
+android/.gradle
+android/app/build/
+android/build/
+android/*.apk
+android/*.aab
+android/app/*.apk
+android/app/*.aab
+android/key.properties
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/**/*.log
+android/**
+
+# macOS specific for Flutter
+macos/Flutter/Flutter.framework
+macos/Flutter/Generated.xcconfig
+macos/Flutter/ephemeral/
+macos/Flutter/App.framework
+macos/Flutter/Flutter.framework.dSYM
+macos/Flutter/Flutter.xcworkspace
+macos/Runner.xcworkspace/
+macos/Runner/GeneratedPluginRegistrant.*
+macos/*.xcodeproj/project.xcworkspace/
+macos/*.xcodeproj/xcshareddata/
+macos/*.xcuserstate
+macos/Pods/
+macos/build/
+macos/DerivedData/
+macos/*.app
+
+# Ignore this .gitignore file itself
+.gitignore
