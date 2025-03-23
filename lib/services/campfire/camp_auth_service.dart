@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   // Replace with your actual auth server URL
-  static const String authUrl = 'https://your-api-url.com/api';
+  static const String authUrl = 'http://localhost:5000/api';
 
   // Store token in SharedPreferences
   static Future<void> saveToken(String token) async {

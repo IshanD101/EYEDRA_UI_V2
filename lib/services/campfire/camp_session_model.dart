@@ -1,12 +1,12 @@
-class Session {
+class CampSession {
   final String sessionId;
   final String title;
   final String category;
   final String startTime;
-  final Host host;
+  final CampHost host;
   final int participantCount;
 
-  Session({
+  CampSession({
     required this.sessionId,
     required this.title,
     required this.category,
@@ -15,33 +15,33 @@ class Session {
     required this.participantCount,
   });
 
-  factory Session.fromJson(Map<String, dynamic> json) {
-    return Session(
+  factory CampSession.fromJson(Map<String, dynamic> json) {
+    return CampSession(
       sessionId: json['sessionId'] ?? '',
       title: json['title'] ?? 'Untitled Session',
       category: json['category'] ?? 'General',
       startTime: json['startTime'] ?? 'Now',
-      host: Host.fromJson(json['host'] ?? {}),
+      host: CampHost.fromJson(json['host'] ?? {}),
       participantCount: json['participantCount'] ?? 0,
     );
   }
 }
 
-class Host {
+class CampHost {
   final String name;
   final String role;
   final String imageUrl;
   final String? bio;
 
-  Host({
+  CampHost({
     required this.name,
     required this.role,
     required this.imageUrl,
     this.bio,
   });
 
-  factory Host.fromJson(Map<String, dynamic> json) {
-    return Host(
+  factory CampHost.fromJson(Map<String, dynamic> json) {
+    return CampHost(
       name: json['name'] ?? 'Unknown Host',
       role: json['role'] ?? 'Host',
       imageUrl: json['imageUrl'] ?? '',

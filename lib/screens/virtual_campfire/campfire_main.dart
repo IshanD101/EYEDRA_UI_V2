@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import '../../models/campfire_listener_data.dart';
-import '../../screens/virtual_campfire/home_page_camp.dart'; // Updated import to use HomePage
+import '../../services/campfire/camp_session_model.dart'; // Updated import for the model
+import '../../services/campfire/camp_session_service.dart'; // Added import for session service
+import '../../services/campfire/camp_auth_service.dart'; // Added import for auth service
+import '../../screens/virtual_campfire/home_page_camp.dart';
 
 class CampfireMain extends StatefulWidget {
   const CampfireMain({super.key});
@@ -11,18 +13,18 @@ class CampfireMain extends StatefulWidget {
 }
 
 class _CampfireState extends State<CampfireMain> {
-  late Future<List<Session>> _sessionsFuture;
+  late Future<List<CampSession>> _sessionsFuture;
 
   @override
   void initState() {
     super.initState();
-    _sessionsFuture = SessionService.fetchSessions();
+    _sessionsFuture = CampSessionService.fetchSessions();
   }
 
-  void _showHostDetails(BuildContext context, Host host) {
+  void _showHostDetails(BuildContext context, CampHost host) {
     showDialog(
       context: context,
-      barrierColor: Colors.grey[900]!.withOpacity(0.6),
+      barrierColor: Colors.black.withOpacity(0.5),
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -115,17 +117,33 @@ class _CampfireState extends State<CampfireMain> {
                     ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {
-                      // Navigate to HomePage from your individual project
-                      Navigator.pop(context); // Close the dialog first
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          // Pre-populate the session ID with the host's name
-                          final sessionId = host.name.replaceAll(' ', '_').toLowerCase() + "_session";
-                          return HomePage(prefilledSessionId: sessionId);
-                        }),
-                      );
+                    onPressed: () async {
+                      // Close the dialog first
+                      Navigator.pop(context);
+
+                      // Join the session through the API
+                      final sessionId = host.name.replaceAll(' ', '_').toLowerCase() + "_session";
+                      final result = await CampSessionService.joinSession(sessionId);
+
+                      if (!mounted) return;
+
+                      if (result['success'] == true) {
+                        // Navigate to HomePage with the joined session ID
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return HomePage(prefilledSessionId: sessionId);
+                          }),
+                        );
+                      } else {
+                        // Show error message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(result['message'] ?? 'Failed to join session'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -157,9 +175,17 @@ class _CampfireState extends State<CampfireMain> {
         : 2;
 
     return Scaffold(
-      backgroundColor: Colors.grey[900]!.withOpacity(0.6),
+      backgroundColor: Colors.black.withOpacity(0.8),
       extendBodyBehindAppBar: true,
-      body: FutureBuilder<List<Session>>(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Show dialog to create a new session
+          _showCreateSessionDialog(context);
+        },
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      body: FutureBuilder<List<CampSession>>(
         future: _sessionsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -172,7 +198,37 @@ class _CampfireState extends State<CampfireMain> {
                     style: const TextStyle(color: Colors.white)));
           }
 
-          final sessions = snapshot.data!;
+          final sessions = snapshot.data ?? [];
+
+          if (sessions.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.meeting_room_outlined,
+                      size: 80, color: Colors.white.withOpacity(0.6)),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No active sessions found',
+                    style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 18),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      // Refresh the sessions
+                      setState(() {
+                        _sessionsFuture = CampSessionService.fetchSessions();
+                      });
+                    },
+                    child: const Text(
+                      'Refresh',
+                      style: TextStyle(color: Colors.blue, fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
 
           return Padding(
             padding:
@@ -243,6 +299,20 @@ class _CampfireState extends State<CampfireMain> {
                                   Text(session.startTime,
                                       style: const TextStyle(
                                           color: Colors.white70, fontSize: 14)),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.people_outline,
+                                          color: Colors.white70,
+                                          size: 16),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '${session.participantCount} participants',
+                                        style: const TextStyle(
+                                            color: Colors.white70, fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -312,6 +382,163 @@ class _CampfireState extends State<CampfireMain> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showCreateSessionDialog(BuildContext context) {
+    final titleController = TextEditingController();
+    final categoryController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20.0),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.blue.withOpacity(0.3),
+                    Colors.blue[900]!.withOpacity(0.2),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20.0),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 0.5,
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Create New Session',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: titleController,
+                    decoration: InputDecoration(
+                      labelText: 'Session Title',
+                      labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: categoryController,
+                    decoration: InputDecoration(
+                      labelText: 'Category',
+                      labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (titleController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please enter a session title'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
+                          // First check if user info exists
+                          final userInfo = await AuthService.getUserInfo();
+                          if (userInfo == null) {
+                            // Create mock user if no user exists
+                            await AuthService.createMockUser('Host', 'host');
+                          }
+
+                          // Create the session
+                          final result = await CampSessionService.createSession(
+                            titleController.text.trim(),
+                            categoryController.text.trim().isEmpty
+                                ? 'General'
+                                : categoryController.text.trim(),
+                          );
+
+                          if (!mounted) return;
+                          Navigator.pop(context);
+
+                          if (result['success'] == true) {
+                            // Refresh sessions list
+                            setState(() {
+                              _sessionsFuture = CampSessionService.fetchSessions();
+                            });
+
+                            // Navigate to the session
+                            if (result['sessionId'] != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  return HomePage(prefilledSessionId: result['sessionId']);
+                                }),
+                              );
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(result['message'] ?? 'Failed to create session'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Create'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

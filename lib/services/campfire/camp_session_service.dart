@@ -1,12 +1,12 @@
 import 'camp_session_model.dart';
 import 'campfire_api_service.dart';
 
-class SessionService {
+class CampSessionService {
   // Fetch active sessions from the backend
-  static Future<List<Session>> fetchSessions() async {
+  static Future<List<CampSession>> fetchSessions() async {
     try {
       final sessionsData = await ApiService.getActiveSessions();
-      return sessionsData.map((data) => Session.fromJson(data)).toList();
+      return sessionsData.map((data) => CampSession.fromJson(data)).toList();
     } catch (e) {
       print('Error in fetchSessions: $e');
       return [];
