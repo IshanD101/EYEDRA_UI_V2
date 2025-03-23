@@ -4,7 +4,7 @@ import 'auth_service.dart';
 
 class AuthApi {
   final AuthService _authService = AuthService();
-  final String baseUrl = 'https://your-api-url.com/api'; // Update with your actual API URL
+  final String baseUrl = 'http://localhost:8070/api/v1'; // Update with your actual API URL
 
   // Login
   Future<Map<String, dynamic>> login(String username, String password) async {
@@ -96,7 +96,7 @@ class AuthApi {
       }
 
       final response = await http.get(
-        Uri.parse('$baseUrl/auth/me'),
+        Uri.parse('$baseUrl/user/{username}'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
