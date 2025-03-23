@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '/models/group_space_model.dart';
-import '/services/group_service.dart';
+import '../../services/app/group_service.dart';
 import '/widgets/community_card.dart';
 import '/widgets/search_bar.dart';
 

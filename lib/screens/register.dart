@@ -1,7 +1,7 @@
 import 'package:eyedra_ui_v2/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:eyedra_ui_v2/services/auth_api.dart'; // Import the AuthApi
+import 'package:eyedra_ui_v2/services/api/auth_api.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -22,38 +22,41 @@ class _RegisterFormState extends State<RegisterForm> {
   String? _errorMessage;
   String _phoneNumber = '';
 
-  final AuthApi _authApi = AuthApi(); // Create instance of AuthApi
+  final AuthApi _authApi = AuthApi();
   final _formKey = GlobalKey<FormState>();
 
+  // Added username controller and rearranged other controllers to match the desired order
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _emailController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
-  // Register function to call the API
   Future<void> _register() async {
-    setState(() {// Create user data map for API request
+    setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-
+      // Updated user data map to include username and maintain the desired order
       final userData = {
+        'username': _usernameController.text,
+        'password': _passwordController.text,
+        'email': _emailController.text,
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
-        'email': _emailController.text,
         'phoneNumber': _phoneNumber,
-        'password': _passwordController.text,
       };
 
       final result = await _authApi.register(userData);
@@ -63,7 +66,6 @@ class _RegisterFormState extends State<RegisterForm> {
       });
 
       if (result['success']) {
-        // Show success message and navigate to login
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Registration successful! Please log in.'),
@@ -138,34 +140,8 @@ class _RegisterFormState extends State<RegisterForm> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      _buildTextField(_firstNameController, 'First Name'),
-                      const SizedBox(height: 12),
-                      _buildTextField(_lastNameController, 'Last Name'),
-                      const SizedBox(height: 12),
-                      _buildTextField(
-                        _emailController,
-                        'Email',
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      const SizedBox(height: 15),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: IntlPhoneField(
-                              initialCountryCode: 'LK',
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                              onChanged: (phone) {
-                                _phoneNumber = phone.completeNumber;
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Rearranged form fields to match the desired order
+                      _buildTextField(_usernameController, 'Username'),
                       const SizedBox(height: 12),
                       _buildTextField(
                         _passwordController,
@@ -184,8 +160,37 @@ class _RegisterFormState extends State<RegisterForm> {
                           },
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      _buildTextField(
+                        _emailController,
+                        'Email',
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildTextField(_firstNameController, 'First Name'),
+                      const SizedBox(height: 12),
+                      _buildTextField(_lastNameController, 'Last Name'),
+                      const SizedBox(height: 15),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: IntlPhoneField(
+                              initialCountryCode: 'LK',
+                              decoration: InputDecoration(
+                                labelText: 'Mobile Number',
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              onChanged: (phone) {
+                                _phoneNumber = phone.completeNumber;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 16),
-                      // Display error message if registration fails
                       if (_errorMessage != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
@@ -288,6 +293,9 @@ class _RegisterFormState extends State<RegisterForm> {
         }
         if (label == 'Password' && value.length < 6) {
           return 'Password must be at least 6 characters';
+        }
+        if (label == 'Username' && value.length < 3) {
+          return 'Username must be at least 3 characters';
         }
         return null;
       },

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import './auth_service.dart';
+import 'auth_service.dart';
 
 class AuthApi {
   final AuthService _authService = AuthService();

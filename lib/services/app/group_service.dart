@@ -1,5 +1,5 @@
 import '/models/group_space_model.dart';
-import '/services/api_service.dart';
+import '../api/api_service.dart';
 
 class GroupService {
   final ApiService _apiService = ApiService();

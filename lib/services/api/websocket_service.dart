@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
-import './auth_service.dart';
+import 'auth_service.dart';
 
 class WebSocketService {
   final String baseWsUrl = 'wss://your-websocket-server.com'; // Replace with your WebSocket URL

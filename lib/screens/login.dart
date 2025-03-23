@@ -1,7 +1,7 @@
 import 'package:eyedra_ui_v2/screens/home/home_page.dart';
 import 'package:eyedra_ui_v2/screens/register.dart';
 import 'package:flutter/material.dart';
-import 'package:eyedra_ui_v2/services/auth_api.dart'; // Import the AuthApi
+import 'package:eyedra_ui_v2/services/api/auth_api.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -21,20 +21,21 @@ class _LoginFormState extends State<LoginForm> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  final AuthApi _authApi = AuthApi(); // Create instance of AuthApi
+  final AuthApi _authApi = AuthApi();
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _emailController = TextEditingController();
+  // Changed from email to username controller
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  // Login function to call the API
+  // Updated login function to use username instead of email
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
@@ -43,7 +44,7 @@ class _LoginFormState extends State<LoginForm> {
 
     try {
       final result = await _authApi.login(
-        _emailController.text,
+        _usernameController.text,
         _passwordController.text,
       );
 
@@ -118,9 +119,8 @@ class _LoginFormState extends State<LoginForm> {
                   child: Column(
                     children: [
                       _buildTextField(
-                        _emailController,
-                        'Email',
-                        keyboardType: TextInputType.emailAddress,
+                        _usernameController,
+                        'Username',
                       ),
                       const SizedBox(height: 12),
                       _buildTextField(
@@ -237,16 +237,8 @@ class _LoginFormState extends State<LoginForm> {
         if (value == null || value.isEmpty) {
           return 'Please enter your $label';
         }
-        if (label == 'Email' && !_isValidEmail(value)) {
-          return 'Please enter a valid email address';
-        }
         return null;
       },
     );
-  }
-
-  bool _isValidEmail(String email) {
-    final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-    return emailRegExp.hasMatch(email);
   }
 }
