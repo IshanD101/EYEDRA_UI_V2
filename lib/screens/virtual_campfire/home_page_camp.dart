@@ -2,11 +2,13 @@ import 'dart:math' as math;
 
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart'; // Add this import
+import 'package:permission_handler/permission_handler.dart';
 
 // Local imports:
-import '../../screens/virtual_campfire/mental_health_theme.dart'; // Updated import path
+import '../../screens/virtual_campfire/mental_health_theme.dart';
 import '../../screens/virtual_campfire/video_session.dart';
+import '../../services/campfire/camp_auth_service.dart';
+import '../../services/campfire/camp_socket_service.dart';
 
 class HomePage extends StatefulWidget {
   final String? prefilledSessionId;
@@ -23,6 +25,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   late TextEditingController conferenceIDController;
   late TextEditingController nameController;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -31,7 +34,9 @@ class HomePageState extends State<HomePage> {
     conferenceIDController = TextEditingController(
         text: widget.prefilledSessionId ?? "mental_health_session"
     );
-    nameController = TextEditingController();
+
+    // Load user info if available
+    _loadUserInfo();
 
     // Request camera and microphone permissions when page loads
     _requestPermissions();
@@ -41,6 +46,18 @@ class HomePageState extends State<HomePage> {
   Future<void> _requestPermissions() async {
     await Permission.camera.request();
     await Permission.microphone.request();
+  }
+
+  // Load user info from local storage
+  Future<void> _loadUserInfo() async {
+    final userInfo = await AuthService.getUserInfo();
+    if (userInfo != null && userInfo['name'] != null) {
+      setState(() {
+        nameController = TextEditingController(text: userInfo['name']);
+      });
+    } else {
+      nameController = TextEditingController();
+    }
   }
 
   @override
@@ -150,8 +167,22 @@ class HomePageState extends State<HomePage> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () async {
-                        if (conferenceIDController.text.trim().isNotEmpty) {
+                      onPressed: _isLoading ? null : () async {
+                        if (conferenceIDController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Please enter a session ID"),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        setState(() {
+                          _isLoading = true;
+                        });
+
+                        try {
                           // Ensure permissions are granted before proceeding
                           final cameraStatus = await Permission.camera.status;
                           final micStatus = await Permission.microphone.status;
@@ -161,25 +192,52 @@ class HomePageState extends State<HomePage> {
                             await _requestPermissions();
                           }
 
+                          // Save user info for future sessions
+                          final userName = nameController.text.trim();
+                          if (userName.isNotEmpty) {
+                            await AuthService.createMockUser(userName, 'participant');
+                          }
+
+                          // Initialize socket connection
+                          SocketService.initSocket('http://10.0.2.2:5000'); // Use same server as API
+
+                          // Get user info for joining
+                          final userInfo = await AuthService.getUserInfo();
+                          final sessionId = conferenceIDController.text.trim();
+
+                          // Join the session via socket
+                          if (userInfo != null) {
+                            SocketService.joinSession(sessionId, userInfo);
+                          }
+
                           // Navigate to video conference page
                           if (!mounted) return;
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) {
                               return VideoConferencePage(
-                                conferenceID: conferenceIDController.text.trim(),
-                                userName: nameController.text.trim(),
+                                conferenceID: sessionId,
+                                userName: userName.isEmpty ? 'Anonymous' : userName,
                               );
                             }),
-                          );
-                        } else {
-                          // Show error if session ID is empty
+                          ).then((_) {
+                            // When returning from video session, leave the socket session
+                            SocketService.leaveSession();
+                          });
+                        } catch (e) {
+                          if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Please enter a session ID"),
+                            SnackBar(
+                              content: Text("Error: $e"),
                               backgroundColor: Colors.red,
                             ),
                           );
+                        } finally {
+                          if (mounted) {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -190,7 +248,9 @@ class HomePageState extends State<HomePage> {
                         ),
                         elevation: 3,
                       ),
-                      child: const Text(
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
                         "Join Session",
                         style: TextStyle(
                           fontSize: 18,
