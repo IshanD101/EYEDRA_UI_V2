@@ -36,57 +36,11 @@ class ARControlBar extends StatelessWidget {
           ],
           stops: const [0.1, 0.5, 0.9],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // AR World button with colorful text in the center
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildCenterLaunchButton(context),
-                const SizedBox(width: 12),
-                _buildColorfulText("AR WORLD"),
-              ],
-            ),
-          ],
+        // Simple centered button - no text elements
+        child: Center(
+          child: _buildCenterLaunchButton(context),
         ),
       ),
-    );
-  }
-
-  Widget _buildColorfulText(String text) {
-    // Define colors for each letter
-    final List<Color> colors = [
-      Colors.red,
-      Colors.orange,
-      Colors.yellow,
-      Colors.green,
-      Colors.blue,
-      Colors.indigo,
-      Colors.purple,
-      Colors.pink,
-    ];
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(text.length, (index) {
-        return Text(
-          text[index],
-          style: TextStyle(
-            color: colors[index % colors.length],
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-            shadows: [
-              Shadow(
-                color: colors[index % colors.length].withOpacity(0.7),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-        );
-      }),
     );
   }
 
@@ -138,16 +92,10 @@ class ARControlBar extends StatelessWidget {
             ],
             stops: const [0.1, 0.5, 0.9],
           ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Pulse animation would go here with AnimatedBuilder
-              Icon(
-                Icons.view_in_ar,
-                color: Colors.white,
-                size: 28,
-              ),
-            ],
+          child: const Icon(
+            Icons.view_in_ar,
+            color: Colors.white,
+            size: 28,
           ),
         ),
       ),

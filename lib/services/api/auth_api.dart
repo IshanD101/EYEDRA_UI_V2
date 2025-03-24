@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import './auth_service.dart';
+import 'auth_service.dart';
 
 class AuthApi {
   final AuthService _authService = AuthService();
-  final String baseUrl = 'https://your-api-url.com/api'; // Update with your actual API URL
+  final String baseUrl = 'http://localhost:8070/api/v1'; // Update with your actual API URL
 
   // Login
   Future<Map<String, dynamic>> login(String username, String password) async {
@@ -86,7 +86,7 @@ class AuthApi {
     }
   }
 
-  // Get current user profile
+  // Get current user profile - FIXED VERSION
   Future<Map<String, dynamic>> getCurrentUser() async {
     try {
       final token = await _authService.getToken();
@@ -95,8 +95,16 @@ class AuthApi {
         return {'success': false, 'error': 'Not authenticated'};
       }
 
+      // Get the stored username from auth service
+      final username = await _authService.getUsername();
+
+      if (username == null) {
+        return {'success': false, 'error': 'Username not found'};
+      }
+
+      // Properly use the username in the URL
       final response = await http.get(
-        Uri.parse('$baseUrl/auth/me'),
+        Uri.parse('$baseUrl/user/$username'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -111,6 +119,8 @@ class AuthApi {
 
         return {'success': true, 'data': userData};
       } else {
+        print('Error status code: ${response.statusCode}');
+        print('Error response: ${response.body}');
         return {'success': false, 'error': 'Failed to get user profile'};
       }
     } catch (e) {
