@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '/models/message_model.dart';
-import '/services/websocket_service.dart';
-import '/services/role_service.dart';
+import '../../services/api/websocket_service.dart';
+import '../../services/app/role_service.dart';
 import '/widgets/chat_message.dart';
 import '/widgets/user_avatar.dart';
 

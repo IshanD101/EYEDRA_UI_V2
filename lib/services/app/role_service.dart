@@ -1,4 +1,4 @@
-import '/services/auth_service.dart';
+import '../api/auth_service.dart';
 
 class RoleService {
   final AuthService _authService = AuthService();
