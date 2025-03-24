@@ -36,7 +36,21 @@ EYEDRA is a social media platform dedicated to mental wellbeing. It provides a s
 
 ## 🔧 Project Structure
 
-eyedra-frontend/ ├── lib/ │ ├── models/ # Data models │ ├── providers/ # State management files │ ├── services/ # API calls and backend interaction │ ├── screens/ # UI screens │ ├── widgets/ # Reusable UI components │ └── utils/ # Utility functions and helpers ├── assets/ # Images, icons, and other assets ├── pubspec.yaml # Dependencies and packages └── README.md # Project documentation
+eyedra-frontend/
+├── lib/
+│   ├── models/           # Data models
+│   ├── providers/        # State management files
+│   ├── services/         # API calls and backend interaction
+│   ├── screens/          # UI screens
+│   ├── widgets/          # Reusable UI components
+│   └── utils/            # Utility functions and helpers
+├── assets/               # Images, icons, and other assets
+├── pubspec.yaml          # Dependencies and packages
+└── README.md             # Project documentation
+pgsql
+Copy
+Edit
+
 
 
 ## 🛠️ Getting Started
