@@ -19,7 +19,7 @@ class Post {
 
   // Fetch data from the API
   static Future<List<Post>> fetchPosts() async {
-    const String apiUrl = 'https://example.com/api/posts'; // Replace with your API URL
+    const String apiUrl = ''; // Replace with your API URL
     try {
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
