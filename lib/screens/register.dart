@@ -49,7 +49,6 @@ class _RegisterFormState extends State<RegisterForm> {
     });
 
     try {
-      // Updated user data map to include username and maintain the desired order
       final userData = {
         'username': _usernameController.text,
         'password': _passwordController.text,
@@ -61,11 +60,13 @@ class _RegisterFormState extends State<RegisterForm> {
 
       final result = await _authApi.register(userData);
 
+      print('Registration Response: $result'); // Debugging
+
       setState(() {
         _isLoading = false;
       });
 
-      if (result['success']) {
+      if (result.containsKey('status') && result['status'] == "success") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Registration successful! Please log in.'),
@@ -73,13 +74,15 @@ class _RegisterFormState extends State<RegisterForm> {
           ),
         );
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginForm()),
-        );
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginForm()),
+          );
+        });
       } else {
         setState(() {
-          _errorMessage = result['error'];
+          _errorMessage = result['error'] ?? 'An unexpected error occurred.';
         });
       }
     } catch (e) {
@@ -90,6 +93,7 @@ class _RegisterFormState extends State<RegisterForm> {
       print('Registration error: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
