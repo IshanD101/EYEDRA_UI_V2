@@ -60,13 +60,13 @@ class _RegisterFormState extends State<RegisterForm> {
 
       final result = await _authApi.register(userData);
 
-      print('Registration Response: $result'); // Debugging
+      print('Registration Response: $result'); // Debugging output
 
       setState(() {
         _isLoading = false;
       });
 
-      if (result.containsKey('status') && result['status'] == "success") {
+      if (result['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Registration successful! Please log in.'),
@@ -74,6 +74,7 @@ class _RegisterFormState extends State<RegisterForm> {
           ),
         );
 
+        // Add a small delay before navigating
         Future.delayed(Duration(seconds: 1), () {
           Navigator.pushReplacement(
             context,
@@ -84,6 +85,7 @@ class _RegisterFormState extends State<RegisterForm> {
         setState(() {
           _errorMessage = result['error'] ?? 'An unexpected error occurred.';
         });
+        print('Error: $_errorMessage'); // Debugging output
       }
     } catch (e) {
       setState(() {
@@ -93,7 +95,6 @@ class _RegisterFormState extends State<RegisterForm> {
       print('Registration error: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
